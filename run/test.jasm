@@ -1,0 +1,33 @@
+.module "Test"
+.stack 2mb
+
+const "main()i" = .function int main()
+const "test(ii)i" = .function int test(int, int)
+
+.entry "main()i"
+
+section code
+
+public int main():
+    .locals 1
+
+    ldi 420
+    store 0
+
+    ldi 69
+    load 0
+
+    add
+    dup
+
+    call "test(ii)i"
+
+    ret
+
+public int test(int, int):
+    load 0
+    load 1
+
+    mul
+
+    ret
