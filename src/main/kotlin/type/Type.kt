@@ -1,6 +1,6 @@
 package cum.jesus.jesusasm.type
 
-interface Type {
+sealed interface Type {
     val name: String
     val id: String
 

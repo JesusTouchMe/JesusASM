@@ -37,18 +37,30 @@ class Parser(val fileName: String, tokens: List<Token>) {
             }
 
             TokenType.Identifier -> {
-
+                return parseLabel()
             }
         }
+    }
+
+    private fun parseLabel(): Value {
+
     }
 
     private fun parseDotStatement(): Value {
 
     }
 
-    private fun current() = tokenStream.current()
+    private fun expectToken(type: TokenType) {
+        val token = current()
+        if (token.tokenType != type) {
+            println("error $token")
+            throw RuntimeException()
+        }
+    }
 
-    private fun consume() = tokenStream.consume()
+    private inline fun current() = tokenStream.current()
 
-    private fun peek(offset: Int) = tokenStream.peek(offset)
+    private inline fun consume() = tokenStream.consume()
+
+    private inline fun peek(offset: Int) = tokenStream.peek(offset)
 }

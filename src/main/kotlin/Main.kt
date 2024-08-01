@@ -1,5 +1,7 @@
 package cum.jesus.jesusasm
 
+import cum.jesus.jesusasm.codegen.ModuleBytecodeBuffer
+import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 import cum.jesus.jesusasm.lexer.Lexer
 import java.io.File
 

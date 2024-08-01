@@ -2,6 +2,9 @@ package cum.jesus.jesusasm.instruction
 
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 
-interface Value {
-    fun emit(builder: BytecodeBuilder)
+class Label : Value {
+    override fun emit(builder: BytecodeBuilder) {
+
+    }
+
 }
