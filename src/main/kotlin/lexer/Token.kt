@@ -1,3 +1,9 @@
+/*
+Copied from https://github.com/viper-org/vasm and adapted to JesusASM syntax and architecture
+
+Credit to the goat solar mist for letting me use his code
+*/
+
 package cum.jesus.jesusasm.lexer
 
 enum class TokenType {
@@ -5,8 +11,14 @@ enum class TokenType {
 
     Dollar,
 
+    Slash,
+
+    LeftParen, RightParen,
+
     Comma,
     Dot, Colon,
+
+    Equals,
 
     Identifier,
 
@@ -15,13 +27,17 @@ enum class TokenType {
 
     Module,
     Stack,
-    Function,
     Entry,
 
+    Locals,
+
+    Function,
+
     Const,
+    Section,
+
     Public,
     Private,
-    Section,
 
     Type,
 

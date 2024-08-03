@@ -7,11 +7,20 @@ import cum.jesus.jesusasm.codegen.Section
 class Function(private val output: ModuleBytecodeBuffer, private val section: Section) {
     val modifiers = mutableListOf<Modifier>()
 
-    var name: String? = null
-    var descriptor: String? = null
+    /**
+     * Index into the descriptor in the string table
+     *
+     * @see cum.jesus.jesusasm.codegen.builder.BytecodeBuilder.getString
+     */
+    var descriptor: UInt = 0u
 
     fun emit() {
+        output.write(69.toUByte(), section) // some magic number so it knows the difference between a function declaration and padding
 
+        val bits = getModifierBits()
+        output.write(bits, section)
+
+        output.write(descriptor, section)
     }
 
     private fun getModifierBits(): UShort {

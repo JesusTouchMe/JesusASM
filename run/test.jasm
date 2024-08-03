@@ -1,14 +1,15 @@
 .module "Test"
 .stack 2mb
+.entry "main()i"
+
+section constpool
 
 const "main()i" = .function int main()
 const "test(ii)i" = .function int test(int, int)
 
-.entry "main()i"
-
 section code
 
-public int main():
+function public int main():
     .locals 1
 
     ldi 420
@@ -24,7 +25,7 @@ public int main():
 
     ret
 
-public int test(int, int):
+function public int test(int, int):
     load 0
     load 1
 

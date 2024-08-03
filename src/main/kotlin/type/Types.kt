@@ -33,3 +33,7 @@ fun getFunctionType(returnType: Type, argumentTypes: Array<Type>): FunctionType 
     types.add(type)
     return type
 }
+
+fun getFunctionType(returnType: Type, argumentTypes: Collection<Type>): FunctionType {
+    return getFunctionType(returnType, argumentTypes.toTypedArray())
+}

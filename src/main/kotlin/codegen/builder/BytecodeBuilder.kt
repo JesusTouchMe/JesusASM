@@ -1,3 +1,9 @@
+/*
+Copied from https://github.com/viper-org/vasm and adapted to JesusASM syntax and architecture
+
+Credit to the goat solar mist for letting me use his code
+*/
+
 package cum.jesus.jesusasm.codegen.builder
 
 import cum.jesus.jesusasm.codegen.ModuleBytecodeBuffer
@@ -19,6 +25,7 @@ class BytecodeBuilder(val output: ModuleBytecodeBuffer, var moduleName: String) 
     var section: Section = Section.Bytecode
 
     private val forwardLabels = mutableListOf<ForwardLabel>()
+    private val strings = mutableMapOf<String, UInt>()
 
     inline fun function(section: Section = Section.Functions, code: Function.() -> Unit) {
         val function = Function(output, section)
@@ -55,4 +62,16 @@ class BytecodeBuilder(val output: ModuleBytecodeBuffer, var moduleName: String) 
     fun getLabel(name: String) = output.getSymbol(name)
 
     fun getPosition(section: Section) = output.getPosition(section)
+
+    fun getString(string: String): UInt {
+        return strings.getOrElse(string) {
+            val index = output.getPosition(Section.StringTable).toUInt()
+            strings[string] = index
+
+            output.write(string.length.toUShort(), Section.StringTable)
+            output.write(string, Section.StringTable)
+
+            return index
+        }
+    }
 }

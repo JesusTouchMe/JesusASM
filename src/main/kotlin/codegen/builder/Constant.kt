@@ -22,10 +22,7 @@ class Constant(private val output: ModuleBytecodeBuffer, private val section: Se
                 is FunctionSymbol -> {
                     require(kind == ConstantKind.Function)
 
-                    output.write(value.module.length.toUShort(), section)
                     output.write(value.module, section)
-
-                    output.write(value.descriptor.length.toUShort(), section)
                     output.write(value.descriptor, section)
                 }
             }

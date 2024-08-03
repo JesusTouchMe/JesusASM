@@ -6,9 +6,5 @@ Credit to the goat solar mist for letting me use his code
 
 package cum.jesus.jesusasm.instruction
 
-import cum.jesus.jesusasm.codegen.Section
-import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
-
-interface Value {
-    fun emit(builder: BytecodeBuilder, section: Section)
+interface Instruction : Value {
 }

@@ -1,3 +1,9 @@
+/*
+Copied from https://github.com/viper-org/vasm and adapted to JesusASM syntax and architecture
+
+Credit to the goat solar mist for letting me use his code
+*/
+
 package cum.jesus.jesusasm.codegen
 
 import cum.jesus.jesusasm.util.extensions.align16
@@ -7,6 +13,7 @@ enum class Section {
     Functions,
     Classes,
     ConstPool,
+    StringTable,
     Bytecode,
 }
 
@@ -20,26 +27,26 @@ private class ModuleSection(val sectionType: Section) {
     }
 
     fun write(data: UShort) {
-        buffer.add((data and 0xFFu).toByte())
         buffer.add((data.toInt() shr 8 and 0xFF).toByte())
+        buffer.add((data and 0xFFu).toByte())
     }
 
     fun write(data: UInt) {
-        buffer.add((data and 0xFFu).toByte())
-        buffer.add((data shr 8 and 0xFFu).toByte())
-        buffer.add((data shr 16 and 0xFFu).toByte())
         buffer.add((data shr 24 and 0xFFu).toByte())
+        buffer.add((data shr 16 and 0xFFu).toByte())
+        buffer.add((data shr 8 and 0xFFu).toByte())
+        buffer.add((data and 0xFFu).toByte())
     }
 
     fun write(data: ULong) {
-        buffer.add((data and 0xFFu).toByte())
-        buffer.add((data shr 8 and 0xFFu).toByte())
-        buffer.add((data shr 16 and 0xFFu).toByte())
-        buffer.add((data shr 24 and 0xFFu).toByte())
-        buffer.add((data shr 32 and 0xFFu).toByte())
-        buffer.add((data shr 40 and 0xFFu).toByte())
-        buffer.add((data shr 48 and 0xFFu).toByte())
         buffer.add((data shr 56 and 0xFFu).toByte())
+        buffer.add((data shr 48 and 0xFFu).toByte())
+        buffer.add((data shr 40 and 0xFFu).toByte())
+        buffer.add((data shr 32 and 0xFFu).toByte())
+        buffer.add((data shr 24 and 0xFFu).toByte())
+        buffer.add((data shr 16 and 0xFFu).toByte())
+        buffer.add((data shr 8 and 0xFFu).toByte())
+        buffer.add((data and 0xFFu).toByte())
     }
 
     fun write(data: String) {
@@ -49,17 +56,22 @@ private class ModuleSection(val sectionType: Section) {
     }
 }
 
-/**
- * @param nameIndex index into the const pool entry containing the module name
- */
-class ModuleBytecodeBuffer(var nameIndex: UInt, val stackSize: UInt) {
+class ModuleBytecodeBuffer(name: String, val stackSize: UInt, val entryIndex: UInt) {
     private val sections = mutableListOf(
         ModuleSection(Section.Functions),
         ModuleSection(Section.ConstPool),
+        ModuleSection(Section.StringTable),
         ModuleSection(Section.Bytecode),
     )
 
     private val symbols = mutableMapOf<String, Long>()
+
+    private val nameIndex: UInt = 0u
+
+    init {
+        write(name.length.toUShort(), Section.StringTable)
+        write(name, Section.StringTable)
+    }
 
     fun write(data: UByte, section: Section) {
         getModuleSection(section).write(data)
@@ -143,12 +155,13 @@ class ModuleBytecodeBuffer(var nameIndex: UInt, val stackSize: UInt) {
         writeMod(out, stackSize)
         writeMod(out, getModuleSection(Section.Functions).buffer.size.toUInt().align16())
         writeMod(out, getModuleSection(Section.ConstPool).buffer.size.toUInt().align16())
+        writeMod(out, getModuleSection(Section.StringTable).buffer.size.toUInt().align16())
         writeMod(out, getModuleSection(Section.Bytecode).buffer.size.toUInt().align16())
 
         var written: ULong = 0u
         var alignedWritten: ULong = 0u
         for (section in sections) {
-            for (i in 0uL..alignedWritten - written) {
+            for (i in 0uL until alignedWritten - written) {
                 out.write(0)
             }
             written = alignedWritten
@@ -167,9 +180,9 @@ class ModuleBytecodeBuffer(var nameIndex: UInt, val stackSize: UInt) {
     }
 }
 
-fun writeMod(out: BufferedOutputStream, data: UInt) {
-    out.write((data and 0xFFu).toInt())
-    out.write((data shr 8 and 0xFFu).toInt())
-    out.write((data shr 16 and 0xFFu).toInt())
+private fun writeMod(out: BufferedOutputStream, data: UInt) {
     out.write((data shr 24 and 0xFFu).toInt())
+    out.write((data shr 16 and 0xFFu).toInt())
+    out.write((data shr 8 and 0xFFu).toInt())
+    out.write((data and 0xFFu).toInt())
 }

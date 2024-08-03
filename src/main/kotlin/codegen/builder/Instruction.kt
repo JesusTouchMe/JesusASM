@@ -1,3 +1,9 @@
+/*
+Copied from https://github.com/viper-org/vasm and adapted to JesusASM syntax and architecture
+
+Credit to the goat solar mist for letting me use his code
+*/
+
 package cum.jesus.jesusasm.codegen.builder
 
 import cum.jesus.jesusasm.codegen.*
@@ -6,15 +12,8 @@ class Instruction(private val output: ModuleBytecodeBuffer, private val section:
     var prefix: Prefix? = null
     var opcode: Opcode? = null
 
-    var immediate: Any? = null
-        set(value)  {
-            when (value) {
-                is Byte, is Short, is Int, is Long,
-                is UByte, is UShort, is UInt, is ULong, null -> field = value
-
-                else -> throw IllegalArgumentException("Immediate can only be a valid immediate type")
-            }
-        }
+    var immediate: ULong? = null
+    var immediateSize: OperandSize = OperandSize.None
 
     var string: String? = null
 
@@ -22,19 +21,27 @@ class Instruction(private val output: ModuleBytecodeBuffer, private val section:
         if (prefix != null) output.write(prefix!!, section)
         if (opcode != null) output.write(opcode!!, section)
 
-        if (immediate != null) {
-            when (val immediate = immediate!!) {
-                is Byte -> output.write(immediate.toUByte(), section)
-                is UByte -> output.write(immediate, section)
+        if (immediate != null && immediateSize != OperandSize.None) {
+            when (immediateSize) {
+                OperandSize.Byte -> {
+                    output.write(immediate!!.toUByte(), section)
+                }
 
-                is Short -> output.write(immediate.toUShort(), section)
-                is UShort -> output.write(immediate, section)
+                OperandSize.Short -> {
+                    output.write(immediate!!.toUShort(), section)
+                }
 
-                is Int -> output.write(immediate.toUInt(), section)
-                is UInt -> output.write(immediate, section)
+                OperandSize.Int -> {
+                    output.write(immediate!!.toUInt(), section)
+                }
 
-                is Long -> output.write(immediate.toULong(), section)
-                is ULong -> output.write(immediate, section)
+                OperandSize.Long -> {
+                    output.write(immediate!!, section)
+                }
+
+                else -> {
+                    throw RuntimeException("unreachable")
+                }
             }
         }
 

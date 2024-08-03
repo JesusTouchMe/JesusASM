@@ -1,11 +1,15 @@
+/*
+Copied from https://github.com/viper-org/vasm and adapted to JesusASM syntax and architecture
+
+Credit to the goat solar mist for letting me use his code
+*/
+
 package cum.jesus.jesusasm.lexer
 
 import cum.jesus.jesusasm.type.isType
 import cum.jesus.jesusasm.util.extensions.isBinDigit
 import cum.jesus.jesusasm.util.extensions.isHexDigit
 import cum.jesus.jesusasm.util.extensions.isOctDigit
-import java.awt.SystemColor.text
-import kotlin.jvm.Throws
 
 val instructions = hashSetOf(
     "nop",
@@ -42,8 +46,9 @@ val instructions = hashSetOf(
 val keywords = hashMapOf(
     "module" to TokenType.Module,
     "stack" to TokenType.Stack,
-    "function" to TokenType.Function,
     "entry" to TokenType.Entry,
+    "locals" to TokenType.Locals,
+    "function" to TokenType.Function,
     "const" to TokenType.Const,
     "public" to TokenType.Public,
     "private" to TokenType.Private,
@@ -86,13 +91,13 @@ class Lexer(val text: String) {
 
             val text = sb.toString()
 
-            if (text in instructions) {
-                return Token(startSourceLocation, TokenType.Instruction, text)
+            if (text.lowercase() in instructions) {
+                return Token(startSourceLocation, TokenType.Instruction, text.lowercase())
             }
 
-            val it = keywords[text]
+            val it = keywords[text.lowercase()]
             if (it != null) {
-                return Token(startSourceLocation, it, text)
+                return Token(startSourceLocation, it, text.lowercase())
             }
 
             if (isType(text)) {
@@ -145,9 +150,16 @@ class Lexer(val text: String) {
         when (current()) {
             '$' -> return Token(startSourceLocation, TokenType.Dollar, "$")
 
+            '/' -> return Token(startSourceLocation, TokenType.Slash, "/")
+
+            '(' -> return Token(startSourceLocation, TokenType.LeftParen, "(")
+            ')' -> return Token(startSourceLocation, TokenType.RightParen, ")")
+
             ',' -> return Token(startSourceLocation, TokenType.Comma, ",")
             '.' -> return Token(startSourceLocation, TokenType.Dot, ".")
             ':' -> return Token(startSourceLocation, TokenType.Colon, ":")
+
+            '=' -> return Token(startSourceLocation, TokenType.Equals, "=")
 
             '"' -> {
                 consume()

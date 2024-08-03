@@ -1,3 +1,7 @@
 package cum.jesus.jesusasm.codegen.builder.constants
 
-class FunctionSymbol(val module: String, val descriptor: String)
+/**
+ * @param module Index to the module name in the string table
+ * @param descriptor Index to the function descriptor in the string table
+ */
+class FunctionSymbol(val module: UInt, val descriptor: UInt)
