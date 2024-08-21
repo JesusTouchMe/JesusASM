@@ -11,12 +11,14 @@ enum class TokenType {
 
     Dollar,
 
-    Slash,
+    Plus, Minus,
+    Star, Slash,
 
     LeftParen, RightParen,
 
     Comma,
     Dot, Colon,
+    DoubleColon,
 
     Equals,
 
@@ -26,13 +28,17 @@ enum class TokenType {
     String,
 
     Module,
-    Stack,
     Entry,
 
     Locals,
 
+    Class,
+    Extends,
+    Field,
+    Method,
     Function,
 
+    Define,
     Const,
     Section,
 

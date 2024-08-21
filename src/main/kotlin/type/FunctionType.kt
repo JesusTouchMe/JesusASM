@@ -4,6 +4,9 @@ data class FunctionType(val returnType: Type, val argumentTypes: Array<Type>) : 
     override val name: String
     override val id: String
 
+    override val primitiveId: UByte
+        get() = throw RuntimeException("not primitive type")
+
     init {
         val sb = StringBuilder()
 

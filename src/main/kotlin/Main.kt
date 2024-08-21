@@ -18,7 +18,7 @@ fun main(args: Array<String>) {
     val values = parser.parse()
     val entry = parser.globalContext.constants[parser.metaData.entry]!!
 
-    val output = ModuleBytecodeBuffer(parser.metaData.module, parser.metaData.stack, entry)
+    val output = ModuleBytecodeBuffer(parser.metaData.module, entry)
     val builder = BytecodeBuilder(output, parser.metaData.module)
 
     for (value in values) {

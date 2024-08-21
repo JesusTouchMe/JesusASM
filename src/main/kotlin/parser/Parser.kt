@@ -7,6 +7,7 @@ Credit to the goat solar mist for letting me use his code
 package cum.jesus.jesusasm.parser
 
 import cum.jesus.jesusasm.codegen.Modifier
+import cum.jesus.jesusasm.environment.ClassContext
 import cum.jesus.jesusasm.environment.FunctionContext
 import cum.jesus.jesusasm.environment.GlobalContext
 import cum.jesus.jesusasm.instruction.*
@@ -14,9 +15,10 @@ import cum.jesus.jesusasm.instruction.Function
 import cum.jesus.jesusasm.lexer.Token
 import cum.jesus.jesusasm.lexer.TokenType
 import cum.jesus.jesusasm.type.Type
+import cum.jesus.jesusasm.type.VoidType.name
+import cum.jesus.jesusasm.type.getClassType
 import cum.jesus.jesusasm.type.getFunctionType
 import cum.jesus.jesusasm.type.getType
-import kotlin.math.exp
 
 class TokenStream (val tokens: List<Token>) {
     var position: Int = 0
@@ -30,7 +32,7 @@ class TokenStream (val tokens: List<Token>) {
     fun expectToken(type: TokenType) {
         val token = current()
         if (token.tokenType != type) {
-            println("error $token")
+            println("error $token, expected $type")
             throw RuntimeException()
         }
     }
@@ -42,7 +44,7 @@ class TokenStream (val tokens: List<Token>) {
             if (token.tokenType == type) return
         }
 
-        throw RuntimeException("error $token")
+        throw RuntimeException("error $token, expected $types")
     }
 }
 
@@ -50,9 +52,11 @@ class Parser(val fileName: String, tokens: List<Token>) {
     val metaData = MetaData()
     val globalContext = GlobalContext()
     var currentFunctionContext: FunctionContext? = null
+    var currentClassContext: ClassContext? = null
 
     private val tokenStream = TokenStream(tokens)
-    private val instructionParser = InstructionParser(tokenStream, globalContext)
+    private val expressionParser = ExpressionParser(tokenStream, globalContext)
+    private val instructionParser = InstructionParser(tokenStream, globalContext, expressionParser)
 
     fun parse(): List<Value> {
         val values = mutableListOf<Value>()
@@ -82,8 +86,24 @@ class Parser(val fileName: String, tokens: List<Token>) {
                 return parseLabel()
             }
 
+            TokenType.Class -> {
+                return parseClass()
+            }
+
+            TokenType.Field -> {
+                return parseField()
+            }
+
+            TokenType.Method -> {
+                return parseMethod()
+            }
+
             TokenType.Function -> {
                 return parseFunction()
+            }
+
+            TokenType.Define -> {
+                return parseDefine()
             }
 
             TokenType.Const -> {
@@ -120,27 +140,6 @@ class Parser(val fileName: String, tokens: List<Token>) {
                 return null
             }
 
-            TokenType.Stack -> {
-                consume()
-                expectToken(TokenType.Immediate)
-
-                var value = consume().text.toUInt()
-
-                if (current().tokenType == TokenType.Identifier) {
-                    when (current().text) {
-                        "kb" -> value *= 1024u
-                        "mb" -> value *= 1048576u
-                        "gb" -> value *= 1073741824u
-                    }
-
-                    consume()
-                }
-
-                metaData.stack = value
-
-                return null
-            }
-
             TokenType.Entry -> {
                 consume()
                 expectToken(TokenType.String)
@@ -169,6 +168,18 @@ class Parser(val fileName: String, tokens: List<Token>) {
                 return parseConstantFunction()
             }
 
+            TokenType.Class -> {
+                return parseConstantClass()
+            }
+
+            TokenType.Field -> {
+                return parseConstantField()
+            }
+
+            TokenType.Method -> {
+                return parseConstantMethod()
+            }
+
             else -> {
                 throw RuntimeException("bad $token")
             }
@@ -176,9 +187,49 @@ class Parser(val fileName: String, tokens: List<Token>) {
     }
 
     private fun parseType(): Type {
-        expectToken(TokenType.Type)
+        if (current().tokenType == TokenType.Class) {
+            consume()
 
+            val moduleParts = mutableListOf<String>()
+            var className = "0"
+
+            while (current().tokenType != TokenType.End) {
+                if (current().tokenType == TokenType.Identifier) {
+                    val text = consume().text
+
+                    if (current().tokenType == TokenType.Slash) {
+                        moduleParts.add(text)
+                        consume()
+                    } else {
+                        className = text
+                        break
+                    }
+                } else {
+                    throw RuntimeException("bad ${current()}")
+                }
+            }
+
+            if (moduleParts.isEmpty()) {
+                return getClassType(metaData.module, className)
+            } else {
+                return getClassType(moduleParts.joinToString("/"), className)
+            }
+        }
+
+        expectToken(TokenType.Type)
         return getType(consume().text)!!
+    }
+
+    private fun parseModifier(): Modifier {
+        expectTokens(TokenType.Public, TokenType.Private)
+        val modifier = consume()
+
+        return when (modifier.tokenType) {
+            TokenType.Public -> Modifier.Public
+            TokenType.Private -> Modifier.Private
+
+            else -> throw RuntimeException("unreachable")
+        }
     }
 
     private fun parseLabel(): Value {
@@ -189,27 +240,124 @@ class Parser(val fileName: String, tokens: List<Token>) {
         return Label(name)
     }
 
+    private fun parseField(): Value? {
+        consume() // field
+
+        val modifiers = mutableListOf<Modifier>()
+
+        while (current().tokenType != TokenType.Type) {
+            modifiers.add(parseModifier())
+        }
+
+        val type = parseType()
+        val name = consume().text
+
+        currentClassContext!!.fields.add(Field(type, name, modifiers))
+
+        return null
+    }
+
+    private fun parseMethod(): Value? {
+        consume() // method
+
+        val modifiers = mutableListOf<Modifier>()
+
+        while (current().tokenType != TokenType.Type) {
+            modifiers.add(parseModifier())
+        }
+
+        val returnType = parseType()
+
+        expectTokens(TokenType.Identifier, TokenType.Instruction)
+        val name = consume().text
+        val argumentTypes = mutableListOf<Type>()
+
+        expectToken(TokenType.LeftParen)
+        consume()
+
+        while (current().tokenType != TokenType.RightParen) {
+            val type = parseType()
+            argumentTypes.add(type)
+
+            if (current().tokenType != TokenType.RightParen) {
+                expectToken(TokenType.Comma)
+                consume()
+            }
+        }
+        consume()
+
+        val type = getFunctionType(returnType, argumentTypes)
+
+        currentClassContext!!.methods.add(Method(currentClassContext!!.name + "::" + name + type.id))
+
+        return null
+    }
+
+    private fun parseClass(): Value {
+        consume() // class
+
+        val modifiers = mutableListOf<Modifier>()
+
+        while (current().tokenType != TokenType.Identifier) {
+            modifiers.add(parseModifier())
+        }
+
+        val name = consume().text
+        var superModule: String? = null
+        var superClass: String? = null
+
+       if (current().tokenType == TokenType.Extends) {
+           consume()
+
+           val moduleParts = mutableListOf<String>()
+
+           while (current().tokenType != TokenType.End) {
+               if (current().tokenType == TokenType.Identifier) {
+                   val text = consume().text
+
+                   if (current().tokenType == TokenType.Slash) {
+                       moduleParts.add(text)
+                       consume()
+                   } else {
+                       superClass = text
+                       break
+                   }
+               } else {
+                   throw RuntimeException("bad ${current()}")
+               }
+           }
+
+           superModule = moduleParts.joinToString("/")
+       }
+
+        expectToken(TokenType.Colon)
+        consume()
+
+        currentClassContext = ClassContext(metaData.module)
+
+        return Class(name, superModule, superClass, modifiers, currentClassContext!!)
+    }
+
     private fun parseFunction(): Value {
         consume() // function
 
         val modifiers = mutableListOf<Modifier>()
 
         while (current().tokenType != TokenType.Type) {
-            expectTokens(TokenType.Public, TokenType.Private)
-            val modifier = consume()
-
-            when (modifier.tokenType) {
-                TokenType.Public -> modifiers.add(Modifier.Public)
-                TokenType.Private -> modifiers.add(Modifier.Private)
-
-                else -> throw RuntimeException("unreachable")
-            }
+            modifiers.add(parseModifier())
         }
 
         val returnType = parseType()
 
-        expectToken(TokenType.Identifier)
-        val name = consume().text
+        expectTokens(TokenType.Identifier, TokenType.Instruction)
+        var name = consume().text
+
+        if (current().tokenType == TokenType.DoubleColon) {
+            consume()
+            expectTokens(TokenType.Identifier, TokenType.Instruction)
+
+            name += "::" + consume().text
+        }
 
         expectToken(TokenType.LeftParen)
         consume()
@@ -233,7 +381,23 @@ class Parser(val fileName: String, tokens: List<Token>) {
         consume()
 
         val type = getFunctionType(returnType, argumentTypes)
-        return Function(name, type, modifiers)
+        return Function(name, type, modifiers, currentFunctionContext!!)
+    }
+
+    private fun parseDefine(): Value? {
+        consume() // define
+
+        expectToken(TokenType.Identifier)
+        val name = consume().text
+
+        expectToken(TokenType.Equals)
+        consume()
+
+        val value = expressionParser.parse(currentFunctionContext)
+
+        globalContext.defineConstant(name, value)
+
+        return null
     }
 
     private fun parseConstant(): Value {
@@ -261,6 +425,18 @@ class Parser(val fileName: String, tokens: List<Token>) {
                 return parseConstantFunction()
             }
 
+            TokenType.Class -> {
+                return parseConstantClass()
+            }
+
+            TokenType.Field -> {
+                return parseConstantField()
+            }
+
+            TokenType.Method -> {
+                return parseConstantMethod()
+            }
+
             else -> {
                 throw RuntimeException("bad $token")
             }
@@ -275,7 +451,7 @@ class Parser(val fileName: String, tokens: List<Token>) {
         expectToken(TokenType.Identifier)
 
         val moduleParts = mutableListOf<String>()
-        var name: String = "0"
+        var name = "0"
 
         while (current().tokenType != TokenType.End) {
             if (current().tokenType == TokenType.Identifier) {
@@ -291,6 +467,13 @@ class Parser(val fileName: String, tokens: List<Token>) {
             } else {
                 throw RuntimeException("bad ${current()}")
             }
+        }
+
+        if (current().tokenType == TokenType.DoubleColon) {
+            consume()
+            expectToken(TokenType.Identifier)
+
+            name += "::" + consume().text
         }
 
         val module = moduleParts.joinToString("/")
@@ -313,6 +496,118 @@ class Parser(val fileName: String, tokens: List<Token>) {
 
         val functionType = getFunctionType(returnType, argumentTypes)
         return ConstantFunction(module, name, functionType)
+    }
+
+    private fun parseConstantClass(): Value {
+        consume() // class
+
+        val moduleParts = mutableListOf<String>()
+        var name = "0"
+
+        while (current().tokenType != TokenType.End) {
+            if (current().tokenType == TokenType.Identifier) {
+                val text = consume().text
+
+                if (current().tokenType == TokenType.Slash) {
+                    moduleParts.add(text)
+                    consume()
+                } else {
+                    name = text
+                    break
+                }
+            } else {
+                throw RuntimeException("bad ${current()}")
+            }
+        }
+
+        val module = moduleParts.joinToString("/")
+
+        return ConstantClass(module, name)
+    }
+
+    private fun parseConstantField(): Value {
+        consume() // field
+
+        val type = parseType()
+
+        val moduleParts = mutableListOf<String>()
+        var className = "0"
+
+        while (current().tokenType != TokenType.End) {
+            if (current().tokenType == TokenType.Identifier) {
+                val text = consume().text
+
+                if (current().tokenType == TokenType.Slash) {
+                    moduleParts.add(text)
+                    consume()
+                } else {
+                    className = text
+                    break
+                }
+            } else {
+                throw RuntimeException("bad ${current()}")
+            }
+        }
+
+        val module = moduleParts.joinToString("/")
+
+        expectToken(TokenType.DoubleColon)
+        consume()
+
+        val name = consume().text
+
+        return ConstantField(module, className, name)
+    }
+
+    private fun parseConstantMethod(): Value {
+        consume() // field
+
+        val returnType = parseType()
+
+        val moduleParts = mutableListOf<String>()
+        var className = "0"
+
+        while (current().tokenType != TokenType.End) {
+            if (current().tokenType == TokenType.Identifier) {
+                val text = consume().text
+
+                if (current().tokenType == TokenType.Slash) {
+                    moduleParts.add(text)
+                    consume()
+                } else {
+                    className = text
+                    break
+                }
+            } else {
+                throw RuntimeException("bad ${current()}")
+            }
+        }
+
+        val module = moduleParts.joinToString("/")
+
+        expectToken(TokenType.DoubleColon)
+        consume()
+
+        val name = consume().text
+
+        expectToken(TokenType.LeftParen)
+        consume()
+
+        val argumentTypes = mutableListOf<Type>()
+
+        while (current().tokenType != TokenType.RightParen) {
+            val type = parseType()
+            argumentTypes.add(type)
+
+            if (current().tokenType != TokenType.RightParen) {
+                expectToken(TokenType.Comma)
+                consume()
+            }
+        }
+        consume()
+
+        val functionType = getFunctionType(returnType, argumentTypes)
+        return ConstantMethod(module, className, name, functionType)
     }
 
     private inline fun expectToken(type: TokenType) = tokenStream.expectToken(type)

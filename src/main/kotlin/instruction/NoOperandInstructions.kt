@@ -21,6 +21,9 @@ class NopInstruction : NoOperandInstruction(NOP)
 class PopInstruction : NoOperandInstruction(POP)
 class DupInstruction : NoOperandInstruction(DUP)
 
+class ALoadInstruction : NoOperandInstruction(ALOAD)
+class AStoreInstruction : NoOperandInstruction(ASTORE)
+
 class AddInstruction : NoOperandInstruction(ADD)
 class SubInstruction : NoOperandInstruction(SUB)
 class MulInstruction : NoOperandInstruction(MUL)

@@ -1,13 +1,12 @@
 package cum.jesus.jesusasm.type
 
-object VoidType : Type {
-    override val name = "void"
-    override val id = "V"
+class ClassType(val module: String, override val name: String) : Type {
+    override val id: String = "T$module/$name;"
 
     override val primitiveId: UByte
         get() = throw RuntimeException("not primitive type")
 
     override fun equals(other: Any?): Boolean {
-        return other is VoidType
+        return other is ClassType && other.id == id
     }
 }

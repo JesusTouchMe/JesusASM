@@ -17,6 +17,13 @@ val instructions = hashSetOf(
     "dup",
     "load",
     "store",
+    "aload",
+    "astore",
+    "new",
+    "newarray",
+    "newarrayprim",
+    "getfield",
+    "putfield",
     "add",
     "sub",
     "mul",
@@ -40,19 +47,24 @@ val instructions = hashSetOf(
     "ret",
     "constload",
     "ldi",
+    "debug",
     "hlt",
 )
 
 val keywords = hashMapOf(
     "module" to TokenType.Module,
-    "stack" to TokenType.Stack,
     "entry" to TokenType.Entry,
     "locals" to TokenType.Locals,
+    "class" to TokenType.Class,
+    "extends" to TokenType.Extends,
+    "field" to TokenType.Field,
+    "method" to TokenType.Method,
     "function" to TokenType.Function,
+    "define" to TokenType.Define,
     "const" to TokenType.Const,
+    "section" to TokenType.Section,
     "public" to TokenType.Public,
     "private" to TokenType.Private,
-    "section" to TokenType.Section,
 )
 
 class Lexer(val text: String) {
@@ -150,6 +162,9 @@ class Lexer(val text: String) {
         when (current()) {
             '$' -> return Token(startSourceLocation, TokenType.Dollar, "$")
 
+            '+' -> return Token(startSourceLocation, TokenType.Plus, "+")
+            '-' -> return Token(startSourceLocation, TokenType.Minus, "-")
+            '*' -> return Token(startSourceLocation, TokenType.Star, "*")
             '/' -> return Token(startSourceLocation, TokenType.Slash, "/")
 
             '(' -> return Token(startSourceLocation, TokenType.LeftParen, "(")
@@ -157,7 +172,21 @@ class Lexer(val text: String) {
 
             ',' -> return Token(startSourceLocation, TokenType.Comma, ",")
             '.' -> return Token(startSourceLocation, TokenType.Dot, ".")
-            ':' -> return Token(startSourceLocation, TokenType.Colon, ":")
+            ';' -> {
+                while (current() != '\n') {
+                    consume()
+                }
+
+                return null
+            }
+            ':' -> {
+                if (peek(1) == ':') {
+                    consume()
+                    return Token(startSourceLocation, TokenType.DoubleColon, "::")
+                }
+
+                return Token(startSourceLocation, TokenType.Colon, ":")
+            }
 
             '=' -> return Token(startSourceLocation, TokenType.Equals, "=")
 

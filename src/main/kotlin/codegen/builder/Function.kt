@@ -3,9 +3,12 @@ package cum.jesus.jesusasm.codegen.builder
 import cum.jesus.jesusasm.codegen.Modifier
 import cum.jesus.jesusasm.codegen.ModuleBytecodeBuffer
 import cum.jesus.jesusasm.codegen.Section
+import cum.jesus.jesusasm.util.extensions.getModifierBits
 
 class Function(private val output: ModuleBytecodeBuffer, private val section: Section) {
     val modifiers = mutableListOf<Modifier>()
+
+    var entry: Long = 0
 
     /**
      * Index into the descriptor in the string table
@@ -14,22 +17,17 @@ class Function(private val output: ModuleBytecodeBuffer, private val section: Se
      */
     var descriptor: UInt = 0u
 
-    fun emit() {
-        output.write(69.toUByte(), section) // some magic number so it knows the difference between a function declaration and padding
+    var localsCount: UShort = 0u
+    var argumentCount: UShort = 0u
 
-        val bits = getModifierBits()
-        output.write(bits, section)
+    fun emit() {
+        output.write(modifiers.getModifierBits(), section)
+
+        output.write(argumentCount, section)
+        output.write(localsCount, section)
 
         output.write(descriptor, section)
-    }
 
-    private fun getModifierBits(): UShort {
-        var bits: UShort = 0u
-
-        for (modifier in modifiers) {
-            bits = bits or modifier.bitmask
-        }
-
-        return bits
+        output.write(entry.toULong(), section);
     }
 }

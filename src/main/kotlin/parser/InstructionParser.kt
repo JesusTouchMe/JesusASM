@@ -6,10 +6,11 @@ import cum.jesus.jesusasm.instruction.*
 import cum.jesus.jesusasm.instruction.operand.LabelOperand
 import cum.jesus.jesusasm.instruction.singleoperandinstruction.*
 import cum.jesus.jesusasm.lexer.TokenType
+import cum.jesus.jesusasm.type.getType
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.primaryConstructor
 
-class InstructionParser(private val tokenStream: TokenStream, private val globalContext: GlobalContext) {
+class InstructionParser(private val tokenStream: TokenStream, private val globalContext: GlobalContext, private val expressionParser: ExpressionParser) {
     private var functionContext: FunctionContext? = null
 
     private val parserFunctions = mutableMapOf(
@@ -18,6 +19,13 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         "dup" to { parseNoOperandInstruction<DupInstruction>() },
         "load" to ::parseLoad,
         "store" to ::parseStore,
+        "aload" to { parseNoOperandInstruction<ALoadInstruction>() },
+        "astore" to { parseNoOperandInstruction<AStoreInstruction>() },
+        "new" to ::parseNew,
+        "newarray" to ::parseNewArray,
+        "newarrayprim" to ::parseNewArrayPrim,
+        "getfield" to ::parseGetField,
+        "putfield" to ::parsePutField,
         "add" to { parseNoOperandInstruction<AddInstruction>() },
         "sub" to { parseNoOperandInstruction<SubInstruction>() },
         "mul" to { parseNoOperandInstruction<MulInstruction>() },
@@ -55,11 +63,31 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
     private inline fun <reified T : NoOperandInstruction> parseNoOperandInstruction() = T::class.createInstance()
 
     private fun parseLoad(): Instruction {
-        return LoadInstruction(parseImmediate())
+        return LoadInstruction(expressionParser.parse(functionContext!!))
     }
 
     private fun parseStore(): Instruction {
-        return StoreInstruction(parseImmediate())
+        return StoreInstruction(expressionParser.parse(functionContext!!))
+    }
+
+    private fun parseNew(): Instruction {
+        return NewInstruction(expressionParser.parse(functionContext!!))
+    }
+
+    private fun parseNewArray(): Instruction {
+        return NewArrayInstruction(expressionParser.parse(functionContext!!))
+    }
+
+    private fun parseNewArrayPrim(): Instruction {
+        return NewArrayPrimInstruction(parsePrimTypeId())
+    }
+
+    private fun parseGetField(): Instruction {
+        return GetFieldInstruction(expressionParser.parse(functionContext!!))
+    }
+
+    private fun parsePutField(): Instruction {
+        return PutFieldInstruction(expressionParser.parse(functionContext!!))
     }
 
     private inline fun <reified T : BaseJmpInstruction> parseJumpInstruction(): Instruction {
@@ -71,24 +99,21 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
     }
 
     private fun parseCall(): Instruction {
-        return CallInstruction(parseImmediate())
+        return CallInstruction(expressionParser.parse(functionContext!!))
     }
 
     private fun parseConstLoad(): Instruction {
-        return ConstLoadInstruction(parseImmediate())
+        return ConstLoadInstruction(expressionParser.parse(functionContext!!))
     }
 
     private fun parseLdi(): Instruction {
-        return LdiInstruction(parseImmediate())
+        return LdiInstruction(expressionParser.parse(functionContext!!))
     }
 
-    private fun parseImmediate(): ULong {
-        if (current().tokenType == TokenType.String) {
-            return globalContext.constants[consume().text]!!.toULong()
-        }
+    private fun parsePrimTypeId(): UByte {
+        expectToken(TokenType.Type)
 
-        expectToken(TokenType.Immediate)
-        return consume().text.toULong()
+        return getType(consume().text)!!.primitiveId
     }
 
     private fun parseLabel(): LabelOperand {

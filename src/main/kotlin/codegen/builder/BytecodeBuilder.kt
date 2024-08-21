@@ -33,6 +33,12 @@ class BytecodeBuilder(val output: ModuleBytecodeBuffer, var moduleName: String) 
         function.emit()
     }
 
+    inline fun clas(section: Section = Section.Classes, code: Class.() -> Unit) {
+        val clas = Class(output, section)
+        clas.code()
+        clas.emit()
+    }
+
     inline fun constant(section: Section = Section.ConstPool, code: Constant.() -> Unit) {
         val constant = Constant(output, section)
         constant.code()
@@ -73,5 +79,17 @@ class BytecodeBuilder(val output: ModuleBytecodeBuffer, var moduleName: String) 
 
             return index
         }
+    }
+
+    fun incFunctionCount() {
+        output.functionCount++
+    }
+
+    fun incClassCount() {
+        output.classCount++
+    }
+
+    fun incConstPoolElementCount() {
+        output.constPoolElementCount++
     }
 }

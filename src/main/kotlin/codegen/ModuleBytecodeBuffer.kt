@@ -56,9 +56,10 @@ private class ModuleSection(val sectionType: Section) {
     }
 }
 
-class ModuleBytecodeBuffer(name: String, val stackSize: UInt, val entryIndex: UInt) {
+class ModuleBytecodeBuffer(name: String, val entryIndex: UInt) {
     private val sections = mutableListOf(
         ModuleSection(Section.Functions),
+        ModuleSection(Section.Classes),
         ModuleSection(Section.ConstPool),
         ModuleSection(Section.StringTable),
         ModuleSection(Section.Bytecode),
@@ -67,6 +68,10 @@ class ModuleBytecodeBuffer(name: String, val stackSize: UInt, val entryIndex: UI
     private val symbols = mutableMapOf<String, Long>()
 
     private val nameIndex: UInt = 0u
+
+    var functionCount = 0u
+    var classCount = 0u
+    var constPoolElementCount = 0u
 
     init {
         write(name.length.toUShort(), Section.StringTable)
@@ -152,9 +157,13 @@ class ModuleBytecodeBuffer(name: String, val stackSize: UInt, val entryIndex: UI
     fun print(out: BufferedOutputStream) {
         writeMod(out, MAGIC_NUMBER)
         writeMod(out, nameIndex)
-        writeMod(out, stackSize)
+        writeMod(out, entryIndex)
         writeMod(out, getModuleSection(Section.Functions).buffer.size.toUInt().align16())
+        writeMod(out, functionCount)
+        writeMod(out, getModuleSection(Section.Classes).buffer.size.toUInt().align16())
+        writeMod(out, classCount)
         writeMod(out, getModuleSection(Section.ConstPool).buffer.size.toUInt().align16())
+        writeMod(out, constPoolElementCount)
         writeMod(out, getModuleSection(Section.StringTable).buffer.size.toUInt().align16())
         writeMod(out, getModuleSection(Section.Bytecode).buffer.size.toUInt().align16())
 
@@ -180,7 +189,7 @@ class ModuleBytecodeBuffer(name: String, val stackSize: UInt, val entryIndex: UI
     }
 }
 
-private fun writeMod(out: BufferedOutputStream, data: UInt) {
+private inline fun writeMod(out: BufferedOutputStream, data: UInt) {
     out.write((data shr 24 and 0xFFu).toInt())
     out.write((data shr 16 and 0xFFu).toInt())
     out.write((data shr 8 and 0xFFu).toInt())

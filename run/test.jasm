@@ -1,34 +1,65 @@
-.module "Test"
-.stack 2mb
+.module "HelloWorld"
 .entry "main()i"
+
+define x = 30 + 4
+define y = 30 + 10 - 5
 
 section constpool
 
+const "Test" = .class Test
+
+const "Test::x" = .field int Test::x
+const "Test::y" = .field int Test::y
+
+const "Test::Test(ii)V" = .method void Test::Test(class Test, int, int)
+const "Test::add()i" = .method int Test::add(class Test)
+
 const "main()i" = .function int main()
-const "test(ii)i" = .function int test(int, int)
+
+section classes
+
+class public Test:
+    field public int x
+    field public int y
+
+    method public void Test(class Test, int, int)
+
+    method public int add(class Test)
 
 section code
 
-function public int main():
-    .locals 1
-
-    ldi 420
-    store 0
-
-    ldi 69
+function public void Test::Test(class Test, int, int):
     load 0
-
-    add
     dup
 
-    call "test(ii)i"
-
-    ret
-
-function public int test(int, int):
-    load 0
     load 1
+    putfield "Test::x"
 
-    mul
+    load 2
+    putfield "Test::y"
 
     ret
+
+function public int Test::add(class Test):
+    load 0
+    getfield "Test::x"
+
+    load 0
+    getfield "Test::y"
+
+    add
+
+    ret
+
+function public int main():
+    ;new "Test"
+
+    ;dup
+    ;ldi x
+    ;ldi y
+    ;call "Test::Test(ii)V"
+
+    ;call "Test::add()i"
+    debug
+
+    hlt

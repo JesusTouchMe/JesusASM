@@ -1,5 +1,7 @@
 package cum.jesus.jesusasm.codegen
 
+import com.sun.org.apache.bcel.internal.generic.ALOAD
+
 enum class OperandSize {
     Byte,
     Short,
@@ -19,6 +21,9 @@ enum class Modifier(val bitmask: UShort) {
 
 enum class ConstantKind(val byte: UByte) {
     Function(1u),
+    Class(2u),
+    Field(3u),
+    Method(4u),
 }
 
 const val NOP: Opcode = 0x00u
@@ -26,6 +31,13 @@ const val POP: Opcode = 0x01u
 const val DUP: Opcode = 0x02u
 const val LOAD: Opcode = 0x03u
 const val STORE: Opcode = 0x04u
+const val ALOAD: Opcode = 0x29u
+const val ASTORE: Opcode = 0x2Au
+const val NEW: Opcode = 0x26u
+const val NEWARRAY: Opcode = 0x27u
+const val NEWARRAYPRIM: Opcode = 0x28u
+const val GETFIELD: Opcode = 0x2Bu
+const val PUTFIELD: Opcode = 0x2Cu
 const val ADD: Opcode = 0x05u
 const val SUB: Opcode = 0x06u
 const val MUL: Opcode = 0x07u
