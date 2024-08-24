@@ -14,6 +14,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
 }
 
+publishing {
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["java"])
+        }
+    }
+}
+
 kotlin {
     jvmToolchain(8)
 }
