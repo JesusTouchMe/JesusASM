@@ -19,3 +19,9 @@ class SectionDirective(val name: String) : Value {
         }
     }
 }
+
+class SectionDirective2(val section: Section) : Value {
+    override fun emit(builder: BytecodeBuilder, section: Section) {
+        builder.section = this.section
+    }
+}

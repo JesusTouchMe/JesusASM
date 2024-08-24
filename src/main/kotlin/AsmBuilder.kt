@@ -16,6 +16,13 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
 
     private var localIndex: UShort = 0u
 
+    var section: Section = Section.Bytecode
+        set(value) {
+            field = value
+
+            value(SectionDirective2(value))
+        }
+
     fun nop() = value(NopInstruction())
 
     fun pop() = value(PopInstruction())
