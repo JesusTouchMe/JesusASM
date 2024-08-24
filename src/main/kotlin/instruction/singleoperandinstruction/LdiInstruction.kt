@@ -7,8 +7,14 @@ import cum.jesus.jesusasm.codegen.WIDE
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 import cum.jesus.jesusasm.instruction.Instruction
 import cum.jesus.jesusasm.util.getImmediateSize
+import java.io.PrintStream
 
 class LdiInstruction(val value: ULong, val size: OperandSize = getImmediateSize(value)) : Instruction {
+    override fun print(stream: PrintStream): Boolean {
+        stream.print("ldi ${size.name} $value")
+        return true
+    }
+
     override fun emit(builder: BytecodeBuilder, section: Section) {
         builder.instruction(section) {
             opcode = LDI

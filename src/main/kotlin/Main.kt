@@ -4,6 +4,7 @@ import cum.jesus.jesusasm.codegen.ModuleBytecodeBuffer
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 import cum.jesus.jesusasm.lexer.Lexer
 import cum.jesus.jesusasm.parser.Parser
+import cum.jesus.jesusasm.printer.AsmPrinter
 import java.io.BufferedOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -18,8 +19,11 @@ fun main(args: Array<String>) {
     val values = parser.parse()
     val entry = parser.globalContext.constants[parser.metaData.entry]!!
 
+    val asmPrinter = AsmPrinter(parser.metaData.module, values)
+    asmPrinter.print(System.out)
+
     val output = ModuleBytecodeBuffer(parser.metaData.module, entry)
-    val builder = BytecodeBuilder(output, parser.metaData.module)
+    val builder = BytecodeBuilder(output)
 
     for (value in values) {
         value.emit(builder, builder.section)

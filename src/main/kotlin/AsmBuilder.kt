@@ -142,7 +142,7 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
         return labels[name] ?: throw RuntimeException("label $name doesn't exist")
     }
 
-    fun jump(condition: JumpCondition, label: LabelOperand) = value(BaseJmpInstruction(condition.opcode, label))
+    fun jump(condition: JumpCondition, label: LabelOperand) = value(BaseJmpInstruction(condition.opcode, condition.codeName, label))
 
     fun int(number: Int) = apply {
         if (number == 0) {
@@ -272,15 +272,15 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
     }
 }
 
-enum class JumpCondition(val opcode: Opcode) {
-    Goto(JMP),
+enum class JumpCondition(val opcode: Opcode, val codeName: String) {
+    Goto(JMP, "jmp"),
 
-    Equal(JEQ),
-    NotEqual(JNE),
-    LessThan(JLT),
-    GreaterThan(JGT),
-    LessOrEqual(JLE),
-    GreaterOrEqual(JGE),
+    Equal(JEQ, "jeq"),
+    NotEqual(JNE, "jne"),
+    LessThan(JLT, "jlt"),
+    GreaterThan(JGT, "jgt"),
+    LessOrEqual(JLE, "jle"),
+    GreaterOrEqual(JGE, "jge"),
 }
 
 enum class LocalType {

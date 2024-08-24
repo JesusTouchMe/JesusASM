@@ -21,7 +21,7 @@ private class ForwardLabel(
 /**
  * Builder class in charge of abstracting away the creation and usage of module files
  */
-class BytecodeBuilder(val output: ModuleBytecodeBuffer, var moduleName: String) {
+class BytecodeBuilder(val output: ModuleBytecodeBuffer) {
     var section: Section = Section.Bytecode
 
     private val forwardLabels = mutableListOf<ForwardLabel>()

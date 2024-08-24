@@ -8,8 +8,18 @@ import cum.jesus.jesusasm.codegen.builder.constants.FieldSymbol
 import cum.jesus.jesusasm.codegen.builder.constants.FunctionSymbol
 import cum.jesus.jesusasm.codegen.builder.constants.MethodSymbol
 import cum.jesus.jesusasm.type.FunctionType
+import java.io.PrintStream
 
-class ConstantFunction(val module: String, val name: String, val functionType: FunctionType) : Value {
+interface Constant : Value
+
+class ConstantFunction(val module: String, val name: String, val functionType: FunctionType) : Constant {
+    override fun print(stream: PrintStream): Boolean {
+        stream.print(".function ${functionType.returnType.name} $name")
+        stream.print(functionType.argumentTypes.joinToString(prefix = "(", postfix = ")") { it.name })
+
+        return true
+    }
+
     override fun emit(builder: BytecodeBuilder, section: Section) {
         builder.constant(section) {
             kind = ConstantKind.Function
@@ -25,7 +35,17 @@ class ConstantFunction(val module: String, val name: String, val functionType: F
     }
 }
 
-class ConstantClass(val module: String, val name: String) : Value {
+class ConstantClass(val module: String, val name: String) : Constant {
+    override fun print(stream: PrintStream): Boolean {
+        if (module.isEmpty()) {
+            stream.print(".class $name")
+        } else {
+            stream.print(".class $module/$name")
+        }
+
+        return true
+    }
+
     override fun emit(builder: BytecodeBuilder, section: Section) {
         builder.constant(section) {
             kind = ConstantKind.Class
@@ -41,7 +61,17 @@ class ConstantClass(val module: String, val name: String) : Value {
     }
 }
 
-class ConstantField(val module: String, val clas: String, val name: String) : Value {
+class ConstantField(val module: String, val clas: String, val name: String) : Constant {
+    override fun print(stream: PrintStream): Boolean {
+        if (module.isEmpty()) {
+            stream.print(".field $clas::$name")
+        } else {
+            stream.print(".field $module/$clas::$name")
+        }
+
+        return true
+    }
+
     override fun emit(builder: BytecodeBuilder, section: Section) {
         builder.constant(section) {
             kind = ConstantKind.Field
@@ -57,7 +87,19 @@ class ConstantField(val module: String, val clas: String, val name: String) : Va
     }
 }
 
-class ConstantMethod(val module: String, val clas: String, val name: String, val functionType: FunctionType) : Value {
+class ConstantMethod(val module: String, val clas: String, val name: String, val functionType: FunctionType) : Constant {
+    override fun print(stream: PrintStream): Boolean {
+        if (module.isEmpty()) {
+            stream.print(".method ${functionType.returnType.name} $clas::$name")
+        } else {
+            stream.print(".method ${functionType.returnType.name} $module/$clas::$name")
+        }
+
+        stream.print(functionType.argumentTypes.joinToString(prefix = "(", postfix = ")") { it.name })
+
+        return true
+    }
+
     override fun emit(builder: BytecodeBuilder, section: Section) {
         builder.constant(section) {
             kind = ConstantKind.Method

@@ -8,7 +8,10 @@ package cum.jesus.jesusasm.instruction
 
 import cum.jesus.jesusasm.codegen.Section
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
+import java.io.PrintStream
 
 interface Value {
+    fun print(stream: PrintStream): Boolean // true if something was printed
+
     fun emit(builder: BytecodeBuilder, section: Section)
 }

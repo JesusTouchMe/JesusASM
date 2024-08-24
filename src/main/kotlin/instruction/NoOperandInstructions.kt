@@ -8,8 +8,14 @@ package cum.jesus.jesusasm.instruction
 
 import cum.jesus.jesusasm.codegen.*
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
+import java.io.PrintStream
 
-open class NoOperandInstruction(val opcode: Opcode) : Instruction {
+open class NoOperandInstruction(val opcode: Opcode, val name: String) : Instruction {
+    override fun print(stream: PrintStream): Boolean {
+        stream.print(name)
+        return true
+    }
+
     override fun emit(builder: BytecodeBuilder, section: Section) {
         builder.instruction(section) {
             opcode = this@NoOperandInstruction.opcode
@@ -17,38 +23,38 @@ open class NoOperandInstruction(val opcode: Opcode) : Instruction {
     }
 }
 
-class NopInstruction : NoOperandInstruction(NOP)
-class PopInstruction : NoOperandInstruction(POP)
-class DupInstruction : NoOperandInstruction(DUP)
+class NopInstruction : NoOperandInstruction(NOP, "nop")
+class PopInstruction : NoOperandInstruction(POP, "pop")
+class DupInstruction : NoOperandInstruction(DUP, "dup")
 
-class ALoadInstruction : NoOperandInstruction(ALOAD)
-class AStoreInstruction : NoOperandInstruction(ASTORE)
-class ALoadObjInstruction : NoOperandInstruction(ALOADOBJ)
-class AStoreObjInstruction : NoOperandInstruction(ASTOREOBJ)
+class ALoadInstruction : NoOperandInstruction(ALOAD, "aload")
+class AStoreInstruction : NoOperandInstruction(ASTORE, "astore")
+class ALoadObjInstruction : NoOperandInstruction(ALOADOBJ, "aloadobj")
+class AStoreObjInstruction : NoOperandInstruction(ASTOREOBJ, "astoreobj")
 
-class AddInstruction : NoOperandInstruction(ADD)
-class SubInstruction : NoOperandInstruction(SUB)
-class MulInstruction : NoOperandInstruction(MUL)
-class DivInstruction : NoOperandInstruction(DIV)
-class AndInstruction : NoOperandInstruction(AND)
-class OrInstruction : NoOperandInstruction(OR)
-class XorInstruction : NoOperandInstruction(XOR)
+class AddInstruction : NoOperandInstruction(ADD, "add")
+class SubInstruction : NoOperandInstruction(SUB, "sub")
+class MulInstruction : NoOperandInstruction(MUL, "mul")
+class DivInstruction : NoOperandInstruction(DIV, "div")
+class AndInstruction : NoOperandInstruction(AND, "and")
+class OrInstruction : NoOperandInstruction(OR, "or")
+class XorInstruction : NoOperandInstruction(XOR, "xor")
 
-class IncInstruction : NoOperandInstruction(INC)
-class DecInstruction : NoOperandInstruction(DEC)
-class NotInstruction : NoOperandInstruction(NOT)
-class NegInstruction : NoOperandInstruction(NEG)
+class IncInstruction : NoOperandInstruction(INC, "inc")
+class DecInstruction : NoOperandInstruction(DEC, "dec")
+class NotInstruction : NoOperandInstruction(NOT, "not")
+class NegInstruction : NoOperandInstruction(NEG, "neg")
 
-class CmpInstruction : NoOperandInstruction(CMP)
+class CmpInstruction : NoOperandInstruction(CMP, "cmp")
 
-class RetInstruction : NoOperandInstruction(RET)
+class RetInstruction : NoOperandInstruction(RET, "ret")
 
-class Ldi0Instruction : NoOperandInstruction(LDI_0)
+class Ldi0Instruction : NoOperandInstruction(LDI_0, "ldi_0")
 
-class DebugInstruction : NoOperandInstruction(DEBUG) {
+class DebugInstruction : NoOperandInstruction(DEBUG, "debug") {
     init {
         println("WARNING: Use of the 'debug' instruction may potentially cause the VM to crash if it's not run in debug mode")
     }
 }
 
-class HltInstruction : NoOperandInstruction(HLT)
+class HltInstruction : NoOperandInstruction(HLT, "hlt")

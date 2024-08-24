@@ -7,7 +7,7 @@ Credit to the goat solar mist for letting me use his code
 package cum.jesus.jesusasm.codegen
 
 import cum.jesus.jesusasm.util.extensions.align16
-import java.io.BufferedOutputStream
+import java.io.OutputStream
 
 enum class Section {
     Functions,
@@ -154,7 +154,7 @@ class ModuleBytecodeBuffer(name: String, val entryIndex: UInt) {
         }
     }
 
-    fun print(out: BufferedOutputStream) {
+    fun print(out: OutputStream) {
         writeMod(out, MAGIC_NUMBER)
         writeMod(out, nameIndex)
         writeMod(out, entryIndex)
@@ -189,7 +189,7 @@ class ModuleBytecodeBuffer(name: String, val entryIndex: UInt) {
     }
 }
 
-private inline fun writeMod(out: BufferedOutputStream, data: UInt) {
+private inline fun writeMod(out: OutputStream, data: UInt) {
     out.write((data shr 24 and 0xFFu).toInt())
     out.write((data shr 16 and 0xFFu).toInt())
     out.write((data shr 8 and 0xFFu).toInt())

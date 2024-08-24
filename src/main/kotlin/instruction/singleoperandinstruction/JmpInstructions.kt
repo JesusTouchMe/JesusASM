@@ -5,8 +5,19 @@ import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 import cum.jesus.jesusasm.instruction.Instruction
 import cum.jesus.jesusasm.instruction.operand.LabelOperand
 import cum.jesus.jesusasm.util.getImmediateSize
+import java.io.PrintStream
 
-open class BaseJmpInstruction(val opcode: Opcode, val label: LabelOperand? = null) : Instruction {
+open class BaseJmpInstruction(val opcode: Opcode, val name: String, val label: LabelOperand? = null) : Instruction {
+    override fun print(stream: PrintStream): Boolean {
+        stream.print(name)
+
+        if (label != null) {
+            stream.print(" ${label.name}")
+        }
+
+        return true
+    }
+
     override fun emit(builder: BytecodeBuilder, section: Section) {
         var wide = false
         val value = label?.getValue(builder, section) ?: 0
@@ -58,10 +69,10 @@ open class BaseJmpInstruction(val opcode: Opcode, val label: LabelOperand? = nul
     }
 }
 
-class JmpInstruction(label: LabelOperand?) : BaseJmpInstruction(JMP, label)
-class JeqInstruction(label: LabelOperand?) : BaseJmpInstruction(JEQ, label)
-class JneInstruction(label: LabelOperand?) : BaseJmpInstruction(JNE, label)
-class JltInstruction(label: LabelOperand?) : BaseJmpInstruction(JLT, label)
-class JgtInstruction(label: LabelOperand?) : BaseJmpInstruction(JGT, label)
-class JleInstruction(label: LabelOperand?) : BaseJmpInstruction(JLE, label)
-class JgeInstruction(label: LabelOperand?) : BaseJmpInstruction(JGE, label)
+class JmpInstruction(label: LabelOperand?) : BaseJmpInstruction(JMP, "jmp", label)
+class JeqInstruction(label: LabelOperand?) : BaseJmpInstruction(JEQ, "jeq", label)
+class JneInstruction(label: LabelOperand?) : BaseJmpInstruction(JNE, "jne", label)
+class JltInstruction(label: LabelOperand?) : BaseJmpInstruction(JLT, "jlt", label)
+class JgtInstruction(label: LabelOperand?) : BaseJmpInstruction(JGT, "jgt", label)
+class JleInstruction(label: LabelOperand?) : BaseJmpInstruction(JLE, "jle", label)
+class JgeInstruction(label: LabelOperand?) : BaseJmpInstruction(JGE, "jge", label)
