@@ -18,9 +18,13 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         "pop" to { parseNoOperandInstruction<PopInstruction>() },
         "dup" to { parseNoOperandInstruction<DupInstruction>() },
         "load" to ::parseLoad,
+        "loadobj" to ::parseLoadObj,
         "store" to ::parseStore,
+        "storeobj" to ::parseStoreObj,
         "aload" to { parseNoOperandInstruction<ALoadInstruction>() },
+        "aloadobj" to { parseNoOperandInstruction<ALoadObjInstruction>() },
         "astore" to { parseNoOperandInstruction<AStoreInstruction>() },
+        "astoreobj" to { parseNoOperandInstruction<AStoreObjInstruction>() },
         "new" to ::parseNew,
         "newarray" to ::parseNewArray,
         "newarrayprim" to ::parseNewArrayPrim,
@@ -49,6 +53,7 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         "ret" to { parseNoOperandInstruction<RetInstruction>() },
         "constload" to ::parseConstLoad,
         "ldi" to ::parseLdi,
+        "ldi_0" to { parseNoOperandInstruction<Ldi0Instruction>() },
         "debug" to { parseNoOperandInstruction<DebugInstruction>() },
         "hlt" to { parseNoOperandInstruction<HltInstruction>() },
     )
@@ -66,8 +71,16 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         return LoadInstruction(expressionParser.parse(functionContext!!))
     }
 
+    private fun parseLoadObj(): Instruction {
+        return LoadObjInstruction(expressionParser.parse(functionContext!!))
+    }
+
     private fun parseStore(): Instruction {
         return StoreInstruction(expressionParser.parse(functionContext!!))
+    }
+
+    private fun parseStoreObj(): Instruction {
+        return StoreObjInstruction(expressionParser.parse(functionContext!!))
     }
 
     private fun parseNew(): Instruction {

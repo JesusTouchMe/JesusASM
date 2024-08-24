@@ -8,7 +8,7 @@ import cum.jesus.jesusasm.util.getImmediateSize
 
 open class BaseJmpInstruction(val opcode: Opcode, val label: LabelOperand? = null) : Instruction {
     override fun emit(builder: BytecodeBuilder, section: Section) {
-        var wide: Boolean = false
+        var wide = false
         val value = label?.getValue(builder, section) ?: 0
 
         builder.instruction(section) {

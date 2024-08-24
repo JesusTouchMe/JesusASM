@@ -25,3 +25,24 @@ class StoreInstruction(val index: ULong, val size: OperandSize = getImmediateSiz
         }
     }
 }
+
+class StoreObjInstruction(val index: ULong, val size: OperandSize = getImmediateSize(index)) : Instruction {
+    override fun emit(builder: BytecodeBuilder, section: Section) {
+        builder.instruction(section) {
+            opcode = STOREOBJ
+            immediate = index
+            immediateSize = size
+
+            when (size) {
+                OperandSize.Byte -> {}
+                OperandSize.Short -> {
+                    prefix = WIDE
+                }
+
+                else -> {
+                    throw RuntimeException("too large operand for store instruction")
+                }
+            }
+        }
+    }
+}

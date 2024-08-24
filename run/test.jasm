@@ -29,7 +29,7 @@ class public Test:
 section code
 
 function public void Test::Test(class Test, int, int):
-    load 0
+    loadobj 0
     dup
 
     load 1
@@ -41,10 +41,10 @@ function public void Test::Test(class Test, int, int):
     ret
 
 function public int Test::add(class Test):
-    load 0
+    loadobj 0
     getfield "Test::x"
 
-    load 0
+    loadobj 0
     getfield "Test::y"
 
     add
@@ -52,14 +52,14 @@ function public int Test::add(class Test):
     ret
 
 function public int main():
-    ;new "Test"
+    new "Test"
 
-    ;dup
-    ;ldi x
-    ;ldi y
-    ;call "Test::Test(ii)V"
+    dup
+    ldi x
+    ldi y
+    call "Test::Test(ii)V"
 
-    ;call "Test::add()i"
+    call "Test::add()i"
     debug
 
     hlt

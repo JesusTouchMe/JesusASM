@@ -36,6 +36,8 @@ class ConstantClass(val module: String, val name: String) : Value {
                 ClassSymbol(builder.getString(module), builder.getString(name))
             }
         }
+
+        builder.incConstPoolElementCount()
     }
 }
 

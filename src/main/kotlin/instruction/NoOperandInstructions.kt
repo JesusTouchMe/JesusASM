@@ -23,6 +23,8 @@ class DupInstruction : NoOperandInstruction(DUP)
 
 class ALoadInstruction : NoOperandInstruction(ALOAD)
 class AStoreInstruction : NoOperandInstruction(ASTORE)
+class ALoadObjInstruction : NoOperandInstruction(ALOADOBJ)
+class AStoreObjInstruction : NoOperandInstruction(ASTOREOBJ)
 
 class AddInstruction : NoOperandInstruction(ADD)
 class SubInstruction : NoOperandInstruction(SUB)
@@ -40,6 +42,8 @@ class NegInstruction : NoOperandInstruction(NEG)
 class CmpInstruction : NoOperandInstruction(CMP)
 
 class RetInstruction : NoOperandInstruction(RET)
+
+class Ldi0Instruction : NoOperandInstruction(LDI_0)
 
 class DebugInstruction : NoOperandInstruction(DEBUG) {
     init {

@@ -333,7 +333,7 @@ class Parser(val fileName: String, tokens: List<Token>) {
         expectToken(TokenType.Colon)
         consume()
 
-        currentClassContext = ClassContext(metaData.module)
+        currentClassContext = ClassContext(name)
 
         return Class(name, superModule, superClass, modifiers, currentClassContext!!)
     }
