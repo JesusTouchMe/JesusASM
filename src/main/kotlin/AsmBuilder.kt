@@ -191,7 +191,10 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
         }
 
         val index = constpool.size.toUInt()
-        value(ConstantFunction(module, name, type))
+        val value = ConstantFunction(module, name, type)
+
+        value(value)
+        constpool.add(value)
 
         return FunctionId(index)
     }
