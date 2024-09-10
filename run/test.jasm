@@ -18,12 +18,7 @@ const "main()i" = .function int main()
 
 section classes
 
-class public Test:
-    field public int x
-    field public int y
-
-    method public void Test(class Test, int, int)
-
+class public Base:
     method public int add(class Test)
 
 section code
@@ -60,6 +55,5 @@ function public int main():
     call "Test::Test(ii)V"
 
     call "Test::add()i"
-    debug
 
     hlt

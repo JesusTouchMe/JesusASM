@@ -22,12 +22,12 @@ class NewInstruction(val index: ULong, val size: OperandSize = getImmediateSize(
             immediateSize = size
 
             when (size) {
-                OperandSize.Byte, OperandSize.Short -> immediateSize = OperandSize.Int
-                OperandSize.Int -> {}
-                OperandSize.Long -> prefix = WIDE
+                OperandSize.Byte -> immediateSize = OperandSize.Short
+                OperandSize.Short -> {}
+                OperandSize.Int -> prefix = WIDE
 
-                OperandSize.None -> {
-                    throw RuntimeException("no size given to new")
+                else -> {
+                    throw RuntimeException("too large operand for new instruction")
                 }
             }
         }

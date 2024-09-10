@@ -49,7 +49,7 @@ val instructions = hashSetOf(
     "jge",
     "call",
     "ret",
-    "constload",
+    "ldc",
     "ldi",
     "ldi_0",
     "debug",

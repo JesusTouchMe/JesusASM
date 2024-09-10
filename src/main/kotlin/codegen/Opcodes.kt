@@ -1,7 +1,5 @@
 package cum.jesus.jesusasm.codegen
 
-import com.sun.org.apache.bcel.internal.generic.ALOAD
-
 enum class OperandSize {
     Byte,
     Short,
@@ -17,6 +15,7 @@ typealias Prefix = UByte
 enum class Modifier(val bitmask: UShort) {
     Public(0x0001u),
     Private(0x0002u),
+    Virtual(0x0004u),
 }
 
 enum class ConstantKind(val byte: UByte) {
@@ -70,9 +69,9 @@ const val JGE: Opcode = 0x28u
 const val JGEREL: Opcode = 0x29u
 const val CALL: Opcode = 0x2Au
 const val RET: Opcode = 0x2Bu
-const val CONSTLOAD: Opcode = 0x2Cu
+const val LDC: Opcode = 0x2Cu
 const val LDI: Opcode = 0x2Du
 const val LDI_0: Opcode = 0x2Eu
-const val WIDE: Opcode = 0x2Fu
+const val WIDE: Prefix = 0x2Fu
 const val DEBUG: Opcode = 0x30u
 const val HLT: Opcode = 0x31u

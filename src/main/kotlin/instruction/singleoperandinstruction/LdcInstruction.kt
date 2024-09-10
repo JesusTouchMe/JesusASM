@@ -6,15 +6,15 @@ import cum.jesus.jesusasm.instruction.Instruction
 import cum.jesus.jesusasm.util.getImmediateSize
 import java.io.PrintStream
 
-class ConstLoadInstruction(val index: ULong, val size: OperandSize = getImmediateSize(index)) : Instruction {
+class LdcInstruction(val index: ULong, val size: OperandSize = getImmediateSize(index)) : Instruction {
     override fun print(stream: PrintStream): Boolean {
-        stream.print("constload ${size.name} $index")
+        stream.print("ldc ${size.name} $index")
         return true
     }
 
     override fun emit(builder: BytecodeBuilder, section: Section) {
         builder.instruction(section) {
-            opcode = CONSTLOAD
+            opcode = LDC
             immediate = index
             immediateSize = size
 

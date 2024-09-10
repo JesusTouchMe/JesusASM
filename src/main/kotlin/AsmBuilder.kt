@@ -8,7 +8,6 @@ import cum.jesus.jesusasm.instruction.operand.LabelOperand
 import cum.jesus.jesusasm.instruction.singleoperandinstruction.*
 import cum.jesus.jesusasm.type.FunctionType
 import cum.jesus.jesusasm.type.Type
-import kotlin.reflect.jvm.internal.ReflectProperties.Val
 
 class AsmBuilder(val module: String, private val values: MutableList<Value> = mutableListOf()) {
     private val labels = mutableMapOf<String, LabelOperand>()
@@ -106,7 +105,7 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
 
     fun ret() = value(RetInstruction())
 
-    fun constload(index: Int) = value(ConstLoadInstruction(index.toULong()))
+    fun constload(index: Int) = value(LdcInstruction(index.toULong()))
 
     fun ldi(value: Int) = value(LdiInstruction(value.toULong()))
     fun ldi(value: Long) = value(LdiInstruction(value.toULong()))
@@ -260,10 +259,7 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
     }
 
     fun build(): Collection<Value> {
-        val res = values.toList()
-        values.clear()
-
-        return res;
+        return values ;
     }
 
     fun insert(builder: Collection<Value>) {

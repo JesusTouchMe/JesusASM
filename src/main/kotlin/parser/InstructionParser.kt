@@ -51,7 +51,7 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         "jge" to { parseJumpInstruction<JgeInstruction>() },
         "call" to ::parseCall,
         "ret" to { parseNoOperandInstruction<RetInstruction>() },
-        "constload" to ::parseConstLoad,
+        "ldc" to ::parseConstLoad,
         "ldi" to ::parseLdi,
         "ldi_0" to { parseNoOperandInstruction<Ldi0Instruction>() },
         "debug" to { parseNoOperandInstruction<DebugInstruction>() },
@@ -116,7 +116,7 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
     }
 
     private fun parseConstLoad(): Instruction {
-        return ConstLoadInstruction(expressionParser.parse(functionContext!!))
+        return LdcInstruction(expressionParser.parse(functionContext!!))
     }
 
     private fun parseLdi(): Instruction {

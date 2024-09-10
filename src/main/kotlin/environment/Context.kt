@@ -29,6 +29,8 @@ class GlobalContext {
 
 class FunctionContext {
     var locals by WriteOnceProperty<UShort>(0u)
+
+
 }
 
 class ClassContext(val name: String) {
