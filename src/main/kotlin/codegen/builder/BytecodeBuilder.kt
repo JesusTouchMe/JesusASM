@@ -22,30 +22,30 @@ private class ForwardLabel(
  * Builder class in charge of abstracting away the creation and usage of module files
  */
 class BytecodeBuilder(val output: ModuleBytecodeBuffer) {
-    var section: Section = Section.Bytecode
+    var section: Section = "code"
 
     private val forwardLabels = mutableListOf<ForwardLabel>()
     private val strings = mutableMapOf<String, UInt>()
 
-    inline fun function(section: Section = Section.Functions, code: Function.() -> Unit) {
+    inline fun function(section: Section = "functions", code: Function.() -> Unit) {
         val function = Function(output, section)
         function.code()
         function.emit()
     }
 
-    inline fun clas(section: Section = Section.Classes, code: Class.() -> Unit) {
+    inline fun clas(section: Section = "classes", code: Class.() -> Unit) {
         val clas = Class(output, section)
         clas.code()
         clas.emit()
     }
 
-    inline fun constant(section: Section = Section.ConstPool, code: Constant.() -> Unit) {
+    inline fun constant(section: Section = "constpool", code: Constant.() -> Unit) {
         val constant = Constant(output, section)
         constant.code()
         constant.emit()
     }
 
-    inline fun instruction(section: Section = Section.Bytecode, code: Instruction.() -> Unit) {
+    inline fun instruction(section: Section = "code", code: Instruction.() -> Unit) {
         val instruction = Instruction(output, section)
         instruction.code()
         instruction.emit()
@@ -69,13 +69,15 @@ class BytecodeBuilder(val output: ModuleBytecodeBuffer) {
 
     fun getPosition(section: Section) = output.getPosition(section)
 
+    fun getSection(name: String): Section = output.getSection(name)
+
     fun getString(string: String): UInt {
         return strings.getOrElse(string) {
-            val index = output.getPosition(Section.StringTable).toUInt()
+            val index = output.getPosition("strtab").toUInt()
             strings[string] = index
 
-            output.write(string.length.toUShort(), Section.StringTable)
-            output.write(string, Section.StringTable)
+            output.write(string.length.toUShort(), "strtab")
+            output.write(string, "strtab")
 
             return index
         }

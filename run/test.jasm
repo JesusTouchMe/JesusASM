@@ -18,28 +18,42 @@ const "main()i" = .function int main()
 
 section classes
 
-class public Base:
+class public Test:
+    field private int x
+    field private int y
+
+    method public void Test(class Test, int, int)
     method public int add(class Test)
 
 section code
 
 function public void Test::Test(class Test, int, int):
-    loadobj 0
+    .locals bind (
+        0: this
+        1: x
+        2: y
+    )
+
+    loadobj this
     dup
 
-    load 1
+    load x
     putfield "Test::x"
 
-    load 2
+    load y
     putfield "Test::y"
 
     ret
 
 function public int Test::add(class Test):
-    loadobj 0
+    .locals bind (
+        0: this
+    )
+
+    loadobj this
     getfield "Test::x"
 
-    loadobj 0
+    loadobj this
     getfield "Test::y"
 
     add
@@ -57,3 +71,13 @@ function public int main():
     call "Test::add()i"
 
     hlt
+
+section init
+    short 0 ; the init section must have 2 bytes in the beginning saying how many locals it uses
+
+    ldi 1
+    ldi 2
+    debug
+    pop
+    pop
+    ret

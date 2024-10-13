@@ -20,11 +20,11 @@ class Function(val name: String, val type: FunctionType, val modifiers: Collecti
         builder.function {
             modifiers.addAll(this@Function.modifiers)
 
-            entry = builder.getPosition(Section.Bytecode);
+            entry = builder.getPosition("code");
 
             descriptor = builder.getString(name + type.id)
 
-            localsCount = context.locals
+            localsCount = context.localCount
             argumentCount = type.argumentTypes.size.toUShort()
         }
 

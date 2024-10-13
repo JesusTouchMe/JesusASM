@@ -54,12 +54,17 @@ val instructions = hashSetOf(
     "ldi_0",
     "debug",
     "hlt",
+    "byte",
+    "short",
+    "int",
+    "long"
 )
 
 val keywords = hashMapOf(
     "module" to TokenType.Module,
     "entry" to TokenType.Entry,
     "locals" to TokenType.Locals,
+    "bind" to TokenType.Bind,
     "class" to TokenType.Class,
     "extends" to TokenType.Extends,
     "field" to TokenType.Field,
@@ -115,10 +120,6 @@ class Lexer(val text: String) {
             val it = keywords[text.lowercase()]
             if (it != null) {
                 return Token(startSourceLocation, it, text.lowercase())
-            }
-
-            if (isType(text)) {
-                return Token(startSourceLocation, TokenType.Type, text)
             }
 
             return Token(startSourceLocation, TokenType.Identifier, text)

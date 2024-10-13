@@ -39,6 +39,8 @@ class Constant(private val output: ModuleBytecodeBuffer, private val section: Se
 
                     output.write(value.module, section)
                     output.write(value.descriptor, section)
+
+                    output.pad(PADDING - 9, section)
                 }
 
                 is ClassSymbol -> {
@@ -46,6 +48,8 @@ class Constant(private val output: ModuleBytecodeBuffer, private val section: Se
 
                     output.write(value.module, section)
                     output.write(value.name, section)
+
+                    output.pad(PADDING - 9, section)
                 }
 
                 is FieldSymbol -> {
@@ -54,6 +58,8 @@ class Constant(private val output: ModuleBytecodeBuffer, private val section: Se
                     output.write(value.module, section)
                     output.write(value.clas, section)
                     output.write(value.name, section)
+
+                    output.pad(PADDING - 13, section)
                 }
 
                 is MethodSymbol -> {
@@ -62,8 +68,14 @@ class Constant(private val output: ModuleBytecodeBuffer, private val section: Se
                     output.write(value.module, section)
                     output.write(value.clas, section)
                     output.write(value.descriptor, section)
+
+                    output.pad(PADDING - 13, section)
                 }
             }
         }
+    }
+
+    companion object {
+        const val PADDING = 24
     }
 }

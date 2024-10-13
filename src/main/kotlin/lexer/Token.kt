@@ -31,6 +31,7 @@ enum class TokenType {
     Entry,
 
     Locals,
+    Bind,
 
     Class,
     Extends,
@@ -44,8 +45,6 @@ enum class TokenType {
 
     Public,
     Private,
-
-    Type,
 
     Instruction,
 

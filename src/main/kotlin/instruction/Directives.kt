@@ -13,28 +13,6 @@ class SectionDirective(val name: String) : Directive {
     }
 
     override fun emit(builder: BytecodeBuilder, section: Section) {
-        builder.section = getSection()
-    }
-
-    private fun getSection(): Section {
-        return when (name) {
-            "functions" -> Section.Functions
-            "classes" -> Section.Classes
-            "constpool" -> Section.ConstPool
-            "code" -> Section.Bytecode
-
-            else -> throw RuntimeException("bad section name $name")
-        }
-    }
-}
-
-class SectionDirective2(val section: Section) : Directive {
-    override fun print(stream: PrintStream): Boolean {
-        stream.print("\nsection ${section.name.lowercase()}")
-        return true
-    }
-
-    override fun emit(builder: BytecodeBuilder, section: Section) {
-        builder.section = this.section
+        builder.section = builder.getSection(name)
     }
 }

@@ -14,11 +14,8 @@ import cum.jesus.jesusasm.instruction.*
 import cum.jesus.jesusasm.instruction.Function
 import cum.jesus.jesusasm.lexer.Token
 import cum.jesus.jesusasm.lexer.TokenType
-import cum.jesus.jesusasm.type.Type
-import cum.jesus.jesusasm.type.VoidType.name
-import cum.jesus.jesusasm.type.getClassType
-import cum.jesus.jesusasm.type.getFunctionType
-import cum.jesus.jesusasm.type.getType
+import cum.jesus.jesusasm.type.*
+import kotlin.math.exp
 
 class TokenStream (val tokens: List<Token>) {
     var position: Int = 0
@@ -151,6 +148,11 @@ class Parser(val fileName: String, tokens: List<Token>) {
 
             TokenType.Locals -> {
                 consume()
+
+                if (current().tokenType == TokenType.Bind) {
+                    return parseLocalsBind()
+                }
+
                 expectToken(TokenType.Immediate)
 
                 val value = consume().text.toUShort()
@@ -159,7 +161,7 @@ class Parser(val fileName: String, tokens: List<Token>) {
                     throw RuntimeException(".locals when a function hasn't been declared yet")
                 }
 
-                currentFunctionContext!!.locals = value
+                currentFunctionContext!!.localCount = value
 
                 return null
             }
@@ -216,7 +218,6 @@ class Parser(val fileName: String, tokens: List<Token>) {
             }
         }
 
-        expectToken(TokenType.Type)
         return getType(consume().text)!!
     }
 
@@ -245,7 +246,7 @@ class Parser(val fileName: String, tokens: List<Token>) {
 
         val modifiers = mutableListOf<Modifier>()
 
-        while (current().tokenType != TokenType.Type) {
+        while (current().tokenType.isModifier()) {
             modifiers.add(parseModifier())
         }
 
@@ -262,7 +263,7 @@ class Parser(val fileName: String, tokens: List<Token>) {
 
         val modifiers = mutableListOf<Modifier>()
 
-        while (current().tokenType != TokenType.Type) {
+        while (current().tokenType.isModifier()) {
             modifiers.add(parseModifier())
         }
 
@@ -343,7 +344,7 @@ class Parser(val fileName: String, tokens: List<Token>) {
 
         val modifiers = mutableListOf<Modifier>()
 
-        while (current().tokenType != TokenType.Type) {
+        while (current().tokenType.isModifier()) {
             modifiers.add(parseModifier())
         }
 
@@ -441,6 +442,38 @@ class Parser(val fileName: String, tokens: List<Token>) {
                 throw RuntimeException("bad $token")
             }
         }
+    }
+
+    private fun parseLocalsBind(): Value? {
+        consume() // bind
+
+        expectToken(TokenType.LeftParen)
+        consume()
+
+        if (currentFunctionContext == null) {
+            throw RuntimeException("can't bind locals without a function being declared")
+        }
+
+        while (current().tokenType != TokenType.RightParen) {
+            expectToken(TokenType.Immediate)
+
+            val index = consume().text.toUShort()
+
+            expectToken(TokenType.Colon)
+            consume()
+
+            expectToken(TokenType.Identifier)
+            val name = consume().text
+
+            if (currentFunctionContext!!.locals.contains(name)) {
+                throw RuntimeException("there's already a local named $name which is bound to ${currentFunctionContext!!.locals[name]}")
+            }
+
+            currentFunctionContext!!.locals[name] = index
+        }
+        consume()
+
+        return null
     }
 
     private fun parseConstantFunction(): Value {
@@ -619,4 +652,8 @@ class Parser(val fileName: String, tokens: List<Token>) {
     private inline fun consume() = tokenStream.consume()
 
     private inline fun peek(offset: Int) = tokenStream.peek(offset)
+}
+
+fun TokenType.isModifier(): Boolean {
+    return this in arrayOf(TokenType.Public, TokenType.Private)
 }

@@ -7,6 +7,7 @@ import cum.jesus.jesusasm.instruction.operand.LabelOperand
 import cum.jesus.jesusasm.instruction.singleoperandinstruction.*
 import cum.jesus.jesusasm.lexer.TokenType
 import cum.jesus.jesusasm.type.getType
+import cum.jesus.jesusasm.type.isType
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.primaryConstructor
 
@@ -56,6 +57,10 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         "ldi_0" to { parseNoOperandInstruction<Ldi0Instruction>() },
         "debug" to { parseNoOperandInstruction<DebugInstruction>() },
         "hlt" to { parseNoOperandInstruction<HltInstruction>() },
+        "byte" to { ByteInstruction(expressionParser.parse(functionContext!!).toUByte()) },
+        "short" to { ShortInstruction(expressionParser.parse(functionContext!!).toUShort()) },
+        "int" to { IntInstruction(expressionParser.parse(functionContext!!).toUInt()) },
+        "long" to { LongInstruction(expressionParser.parse(functionContext!!)) },
     )
 
     fun parse(functionContext: FunctionContext?): Instruction {
@@ -124,7 +129,7 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
     }
 
     private fun parsePrimTypeId(): UByte {
-        expectToken(TokenType.Type)
+        require(isType(current().text)) { "has to be type" }
 
         return getType(consume().text)!!.primitiveId
     }

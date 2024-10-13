@@ -92,6 +92,7 @@ class ExpressionParser(private val tokenStream: TokenStream, private val globalC
         when (current().tokenType) {
             TokenType.String -> return parseConstant()
             TokenType.Identifier -> return parseVariable()
+            TokenType.Module -> return parseModule()
 
             TokenType.Immediate -> return parseImmediate()
 
@@ -106,6 +107,27 @@ class ExpressionParser(private val tokenStream: TokenStream, private val globalC
 
     private fun parseVariable(): ULong {
         val name = consume().text
+
+        if (functionContext != null) {
+            val value = functionContext!!.locals[name]
+
+            if (value != null) {
+                return value.toULong()
+            }
+        }
+
+        return globalContext.defines[name]!!
+    }
+
+    private fun parseModule(): ULong {
+        consume()
+
+        expectToken(TokenType.Dot)
+        consume()
+
+        expectToken(TokenType.Identifier)
+        val name = consume().text
+
         return globalContext.defines[name]!!
     }
 
