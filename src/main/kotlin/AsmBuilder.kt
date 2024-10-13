@@ -15,11 +15,11 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
 
     private var localIndex: UShort = 0u
 
-    var section: Section = Section.Bytecode
+    var section: Section = "code"
         set(value) {
             field = value
 
-            value(SectionDirective2(value))
+            value(SectionDirective(value))
         }
 
     fun nop() = value(NopInstruction())
@@ -177,7 +177,7 @@ class AsmBuilder(val module: String, private val values: MutableList<Value> = mu
 
     fun function(name: String, type: FunctionType, modifiers: Collection<Modifier>, localCount: UShort): FunctionId {
         val context = FunctionContext()
-        context.locals = localCount
+        context.localCount = localCount
 
         value(Function(name, type, modifiers, context))
 
