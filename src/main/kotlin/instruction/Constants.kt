@@ -14,7 +14,11 @@ interface Constant : Value
 
 class ConstantFunction(val module: String, val name: String, val functionType: FunctionType) : Constant {
     override fun print(stream: PrintStream): Boolean {
-        stream.print(".function ${functionType.returnType.name} $name")
+        if (module.isEmpty()) {
+            stream.print(".function ${functionType.returnType.name} $name")
+        } else {
+            stream.print(".function ${functionType.returnType.name} $module/$name")
+        }
         stream.print(functionType.argumentTypes.joinToString(prefix = "(", postfix = ")") { it.name })
 
         return true
