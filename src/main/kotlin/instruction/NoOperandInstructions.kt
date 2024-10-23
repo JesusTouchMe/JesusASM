@@ -10,7 +10,7 @@ import cum.jesus.jesusasm.codegen.*
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 import java.io.PrintStream
 
-open class NoOperandInstruction(val opcode: Opcode, val name: String) : Instruction {
+sealed class NoOperandInstruction(val opcode: Opcode, val name: String) : Instruction {
     override fun print(stream: PrintStream): Boolean {
         stream.print(name)
         return true
@@ -39,6 +39,8 @@ class DivInstruction : NoOperandInstruction(DIV, "div")
 class AndInstruction : NoOperandInstruction(AND, "and")
 class OrInstruction : NoOperandInstruction(OR, "or")
 class XorInstruction : NoOperandInstruction(XOR, "xor")
+class ShrInstruction : NoOperandInstruction(SHR, "shr")
+class ShlInstruction : NoOperandInstruction(SHL, "shl")
 
 class IncInstruction : NoOperandInstruction(INC, "inc")
 class DecInstruction : NoOperandInstruction(DEC, "dec")
@@ -46,10 +48,17 @@ class NotInstruction : NoOperandInstruction(NOT, "not")
 class NegInstruction : NoOperandInstruction(NEG, "neg")
 
 class CmpInstruction : NoOperandInstruction(CMP, "cmp")
+class CmpTrueInstruction : NoOperandInstruction(CMP_TRUE, "cmp_true")
+class CmpFalseInstruction : NoOperandInstruction(CMP_FALSE, "cmp_false")
+
+class PushEqInstruction : NoOperandInstruction(PUSHEQ, "pusheq")
+class PushNeInstruction : NoOperandInstruction(PUSHNE, "pushne")
+class PushLtInstruction : NoOperandInstruction(PUSHLT, "pushlt")
+class PushGtInstruction : NoOperandInstruction(PUSHGT, "pushgt")
+class PushLeInstruction : NoOperandInstruction(PUSHLE, "pushle")
+class PushGeInstruction : NoOperandInstruction(PUSHGE, "pushge")
 
 class RetInstruction : NoOperandInstruction(RET, "ret")
-
-class Ldi0Instruction : NoOperandInstruction(LDI_0, "ldi_0")
 
 class DebugInstruction : NoOperandInstruction(DEBUG, "debug") {
     init {

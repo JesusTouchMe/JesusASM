@@ -38,11 +38,21 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         "and" to { parseNoOperandInstruction<AndInstruction>() },
         "or" to { parseNoOperandInstruction<OrInstruction>() },
         "xor" to { parseNoOperandInstruction<XorInstruction>() },
+        "shr" to { parseNoOperandInstruction<ShrInstruction>() },
+        "shl" to { parseNoOperandInstruction<ShlInstruction>() },
         "inc" to { parseNoOperandInstruction<IncInstruction>() },
         "dec" to { parseNoOperandInstruction<DecInstruction>() },
         "not" to { parseNoOperandInstruction<NotInstruction>() },
         "neg" to { parseNoOperandInstruction<NegInstruction>() },
         "cmp" to { parseNoOperandInstruction<CmpInstruction>() },
+        "cmp_true" to { parseNoOperandInstruction<CmpTrueInstruction>() },
+        "cmp_false" to { parseNoOperandInstruction<CmpFalseInstruction>() },
+        "pusheq" to { parseNoOperandInstruction<PushEqInstruction>() },
+        "pushne" to { parseNoOperandInstruction<PushNeInstruction>() },
+        "pushlt" to { parseNoOperandInstruction<PushLtInstruction>() },
+        "pushgt" to { parseNoOperandInstruction<PushGtInstruction>() },
+        "pushle" to { parseNoOperandInstruction<PushLeInstruction>() },
+        "pushge" to { parseNoOperandInstruction<PushGeInstruction>() },
         "jmp" to { parseJumpInstruction<JmpInstruction>() },
         "jeq" to { parseJumpInstruction<JeqInstruction>() },
         "jne" to { parseJumpInstruction<JneInstruction>() },
@@ -54,7 +64,6 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
         "ret" to { parseNoOperandInstruction<RetInstruction>() },
         "ldc" to ::parseConstLoad,
         "ldi" to ::parseLdi,
-        "ldi_0" to { parseNoOperandInstruction<Ldi0Instruction>() },
         "debug" to { parseNoOperandInstruction<DebugInstruction>() },
         "hlt" to { parseNoOperandInstruction<HltInstruction>() },
         "byte" to { ByteInstruction(expressionParser.parse(functionContext!!).toUByte()) },
@@ -129,9 +138,12 @@ class InstructionParser(private val tokenStream: TokenStream, private val global
     }
 
     private fun parsePrimTypeId(): UByte {
-        require(isType(current().text)) { "has to be type" }
+        if (isType(current().text)) {
+            return getType(consume().text)!!.primitiveId
+        }
 
-        return getType(consume().text)!!.primitiveId
+        expectToken(TokenType.Immediate)
+        return consume().text.toUByte()
     }
 
     private fun parseLabel(): LabelOperand {

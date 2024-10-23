@@ -1,9 +1,6 @@
 package cum.jesus.jesusasm.instruction.singleoperandinstruction
 
-import cum.jesus.jesusasm.codegen.LDI
-import cum.jesus.jesusasm.codegen.OperandSize
-import cum.jesus.jesusasm.codegen.Section
-import cum.jesus.jesusasm.codegen.WIDE
+import cum.jesus.jesusasm.codegen.*
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 import cum.jesus.jesusasm.instruction.Instruction
 import cum.jesus.jesusasm.util.getImmediateSize
@@ -16,6 +13,14 @@ class LdiInstruction(val value: ULong, val size: OperandSize = getImmediateSize(
     }
 
     override fun emit(builder: BytecodeBuilder, section: Section) {
+        if (value == 0uL) {
+            builder.instruction(section) {
+                opcode = LDI_0
+            }
+
+            return
+        }
+
         builder.instruction(section) {
             opcode = LDI
             immediate = value

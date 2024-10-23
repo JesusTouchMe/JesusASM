@@ -5,8 +5,6 @@ import cum.jesus.jesusasm.codegen.OperandSize
 import cum.jesus.jesusasm.codegen.Section
 import cum.jesus.jesusasm.codegen.builder.BytecodeBuilder
 import cum.jesus.jesusasm.instruction.Instruction
-import cum.jesus.jesusasm.type.VoidType.name
-import cum.jesus.jesusasm.util.getImmediateSize
 import java.io.PrintStream
 
 class NewArrayPrimInstruction(val primTypeId: UByte) : Instruction {

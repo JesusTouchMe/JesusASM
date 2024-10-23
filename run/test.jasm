@@ -1,83 +1,36 @@
 .module "HelloWorld"
 .entry "main()i"
 
-define x = 30 + 4
-define y = 30 + 10 - 5
-
-section constpool
-
-const "Test" = .class Test
-
-const "Test::x" = .field int Test::x
-const "Test::y" = .field int Test::y
-
-const "Test::Test(ii)V" = .method void Test::Test(class Test, int, int)
-const "Test::add()i" = .method int Test::add(class Test)
-
-const "main()i" = .function int main()
-
 section classes
-
-class public Test:
-    field private int x
-    field private int y
-
-    method public void Test(class Test, int, int)
-    method public int add(class Test)
+class Test:
+    field public int x
 
 section code
 
-function public void Test::Test(class Test, int, int):
-    .locals bind (
-        0: this
-        1: x
-        2: y
-    )
-
-    loadobj this
-    dup
-
-    load x
-    putfield "Test::x"
-
-    load y
-    putfield "Test::y"
-
-    ret
-
-function public int Test::add(class Test):
-    .locals bind (
-        0: this
-    )
-
-    loadobj this
-    getfield "Test::x"
-
-    loadobj this
-    getfield "Test::y"
-
-    add
-
-    ret
-
-function public int main():
-    new "Test"
-
-    dup
-    ldi x
-    ldi y
-    call "Test::Test(ii)V"
-
-    call "Test::add()i"
-
-    hlt
-
-section init
-    short 0 ; the init section must have 2 bytes in the beginning saying how many locals it uses
+function public long fib(class Test):
+    .locals 2
 
     ldi 1
-    ldi 2
-    debug
-    pop
-    pop
-    ret
+    dup
+    store 0
+    store 1
+
+    cond:
+        load 0
+        load 1
+        cmp
+        jge return
+    loop:
+        load 0
+        dup
+        load 1
+        add
+        store 0
+        store 1
+        jmp cond
+    return:
+        load 0
+        ret
+
+function public int main():
+    hlt

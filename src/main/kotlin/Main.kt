@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
 
     val parser = Parser(input.name, tokens)
     val values = parser.parse()
-    val entry = parser.globalContext.constants[parser.metaData.entry]!!
+    val entry = parser.globalContext.constants[parser.metaData.entry] ?: 0u
 
     val asmPrinter = AsmPrinter(parser.metaData.module, values)
     asmPrinter.print(System.out)
