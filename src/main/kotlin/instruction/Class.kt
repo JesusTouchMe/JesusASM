@@ -48,7 +48,7 @@ class Class(val name: String, val superClassModule: String?, val superClass: Str
         }
 
         for (method in context.methods) {
-            stream.print("\nmethod ${method.functionName}()") // not much to do here since method named are done by the perser
+            stream.print("\nmethod ${method.functionName}()") // not much to do here since the parser does method names
         }
 
         return true
