@@ -3,7 +3,7 @@
 #ifndef JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_TREE_INSNLIST_H
 #define JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_TREE_INSNLIST_H 1
 
-#include "JesusASM/tree/InsnNode.h"
+#include "JesusASM/tree/AbstractInsnNode.h"
 
 namespace JesusASM::tree {
     class InsnList {
@@ -11,9 +11,9 @@ namespace JesusASM::tree {
         class Iterator {
         public:
             using iterator_category = std::forward_iterator_tag;
-            using value_type = InsnNode;
-            using pointer = InsnNode*;
-            using reference = InsnNode&;
+            using value_type = AbstractInsnNode;
+            using pointer = AbstractInsnNode*;
+            using reference = AbstractInsnNode&;
 
             explicit Iterator(pointer node) : mCurrent(node) {}
 
@@ -41,9 +41,9 @@ namespace JesusASM::tree {
         class ReverseIterator {
         public:
             using iterator_category = std::bidirectional_iterator_tag;
-            using value_type = InsnNode;
-            using pointer = InsnNode*;
-            using reference = InsnNode&;
+            using value_type = AbstractInsnNode;
+            using pointer = AbstractInsnNode*;
+            using reference = AbstractInsnNode&;
 
             explicit ReverseIterator(pointer node) : mCurrent(node) {}
 
@@ -74,32 +74,34 @@ namespace JesusASM::tree {
         [[nodiscard]] ReverseIterator rbegin() const { return ReverseIterator(mLast); }
         [[nodiscard]] ReverseIterator rend() const { return ReverseIterator(nullptr); }
 
-        [[nodiscard]] InsnNode* getFirst() const { return mFirst.get(); }
-        [[nodiscard]] InsnNode* getLast() const { return mLast; }
+        [[nodiscard]] AbstractInsnNode* getFirst() const { return mFirst.get(); }
+        [[nodiscard]] AbstractInsnNode* getLast() const { return mLast; }
 
         [[nodiscard]] std::size_t getSize() const { return mSize; }
 
-        [[nodiscard]] bool contains(InsnNode* insn) const;
+        [[nodiscard]] bool contains(AbstractInsnNode* insn) const;
 
-        void add(std::unique_ptr<InsnNode> insn);
+        void add(std::unique_ptr<AbstractInsnNode> insn);
         void add(InsnList& list);
 
-        void addFront(std::unique_ptr<InsnNode> insn);
+        void addFront(std::unique_ptr<AbstractInsnNode> insn);
         void addFront(InsnList& list);
 
-        void insert(InsnNode* location, std::unique_ptr<InsnNode> insn);
-        void insert(InsnNode* location, InsnList& list);
+        void insert(AbstractInsnNode* location, std::unique_ptr<AbstractInsnNode> insn);
+        void insert(AbstractInsnNode* location, InsnList& list);
 
-        void insertBefore(InsnNode* location, std::unique_ptr<InsnNode> insn);
-        void insertBefore(InsnNode* location, InsnList& list);
+        void insertBefore(AbstractInsnNode* location, std::unique_ptr<AbstractInsnNode> insn);
+        void insertBefore(AbstractInsnNode* location, InsnList& list);
 
-        void remove(InsnNode* insn);
+        void remove(AbstractInsnNode* insn);
 
         void clear();
 
+        void emit(moduleweb::InsnList& list);
+
     private:
-        std::unique_ptr<InsnNode> mFirst;
-        InsnNode* mLast;
+        std::unique_ptr<AbstractInsnNode> mFirst;
+        AbstractInsnNode* mLast;
 
         std::size_t mSize;
     };

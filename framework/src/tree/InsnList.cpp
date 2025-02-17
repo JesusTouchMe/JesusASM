@@ -1,10 +1,12 @@
 // Copyright 2025 JesusTouchMe
 
 #include "JesusASM/tree/InsnList.h"
+#include "JesusASM/moduleweb-wrappers/InsnList.h"
+
 
 namespace JesusASM::tree {
-    bool InsnList::contains(InsnNode* insn) const {
-        InsnNode* i = mFirst.get();
+    bool InsnList::contains(AbstractInsnNode* insn) const {
+        AbstractInsnNode* i = mFirst.get();
         while (i != nullptr && i != insn) {
             i = i->getNext();
         }
@@ -12,7 +14,7 @@ namespace JesusASM::tree {
         return i != nullptr;
     }
 
-    void InsnList::add(std::unique_ptr<InsnNode> insn) {
+    void InsnList::add(std::unique_ptr<AbstractInsnNode> insn) {
         mSize++;
 
         if (mLast == nullptr) {
@@ -42,7 +44,7 @@ namespace JesusASM::tree {
         list.clear();
     }
 
-    void InsnList::addFront(std::unique_ptr<InsnNode> insn) {
+    void InsnList::addFront(std::unique_ptr<AbstractInsnNode> insn) {
         mSize++;
 
         if (mFirst == nullptr) {
@@ -64,14 +66,14 @@ namespace JesusASM::tree {
             mFirst = std::move(list.mFirst);
             mLast = list.mLast;
         } else {
-            InsnNode* node = list.mLast;
+            AbstractInsnNode* node = list.mLast;
             mFirst->mPrev = node;
             node->mNext = std::move(mFirst);
             mFirst = std::move(list.mFirst);
         }
     }
 
-    void InsnList::insert(InsnNode* location, std::unique_ptr<InsnNode> insn) {
+    void InsnList::insert(AbstractInsnNode* location, std::unique_ptr<AbstractInsnNode> insn) {
         mSize++;
 
         auto next = std::move(location->mNext);
@@ -87,7 +89,7 @@ namespace JesusASM::tree {
         location->mNext->mPrev = location;
     }
 
-    void InsnList::insert(InsnNode* location, InsnList& list) {
+    void InsnList::insert(AbstractInsnNode* location, InsnList& list) {
         if (list.mSize == 0) return;
 
         mSize += list.mSize;
@@ -107,33 +109,72 @@ namespace JesusASM::tree {
         list.clear();
     }
 
-    void InsnList::insertBefore(InsnNode* location, std::unique_ptr<InsnNode> insn) {
+    void InsnList::insertBefore(AbstractInsnNode* location, std::unique_ptr<AbstractInsnNode> insn) {
         mSize++;
 
-        auto prev = location->mPrev;
-        InsnNode* node;
+        insn->mPrev = location->mPrev;
+        insn->mNext = std::move(location->mPrev != nullptr ? location->mPrev->mNext : mFirst);
 
-        if (prev == nullptr) {
+        if (location->mPrev == nullptr) {
             mFirst = std::move(insn);
-            node = mFirst.get();
+            location->mPrev = mFirst.get();
         } else {
-            prev->mNext = std::move(insn);
-            node = prev->mNext.get();
+            location->mPrev->mNext = std::move(insn);
+            location->mPrev = location->mPrev->mNext.get();
+        }
+    }
+
+    void InsnList::insertBefore(AbstractInsnNode* location, InsnList& list) {
+        if (list.mSize == 0) return;
+
+        mSize += list.mSize;
+
+        if (location->mPrev == nullptr) {
+            list.mLast->mNext = std::move(mFirst);
+            mFirst = std::move(list.mFirst);
+        } else {
+            list.mLast->mNext = std::move(location->mPrev->mNext);
+            location->mPrev->mNext = std::move(list.mFirst);
         }
 
-        location->mPrev = node;
-        node->mNext =
+        if (list.mLast->mNext != nullptr) {
+            list.mLast->mNext->mPrev = list.mLast;
+        }
+
+        location->mPrev = list.mLast;
+
+        list.clear();
     }
 
-    void InsnList::insertBefore(InsnNode* location, InsnList& list) {
+    void InsnList::remove(AbstractInsnNode* insn) {
+        mSize--;
 
-    }
+        if (insn->mPrev == nullptr) {
+            mFirst = std::move(insn->mNext);
+            if (mFirst != nullptr) {
+                mFirst->mPrev = nullptr;
+            }
+        } else {
+            insn->mPrev->mNext = std::move(insn->mNext);
+            if (insn->mPrev->mNext != nullptr) {
+                insn->mPrev->mNext->mPrev = insn->mPrev;
+            }
+        }
 
-    void InsnList::remove(InsnNode* insn) {
-
+        if (insn->mNext == nullptr) {
+            mLast = insn->mPrev;
+        } else {
+            insn->mNext->mPrev = insn->mPrev;
+        }
     }
 
     void InsnList::clear() {
+        mSize = 0;
+        mFirst = nullptr;
+        mLast = nullptr;
+    }
 
+    void InsnList::emit(moduleweb::InsnList& list) {
+        //TODO: implement
     }
 }

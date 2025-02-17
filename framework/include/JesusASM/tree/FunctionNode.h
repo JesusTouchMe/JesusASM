@@ -5,6 +5,8 @@
 
 #include "JesusASM/Attribute.h"
 
+#include "JesusASM/tree/InsnList.h"
+
 #include "JesusASM/moduleweb-wrappers/FunctionBuilder.h"
 
 #include <memory>
@@ -15,6 +17,8 @@ namespace JesusASM::tree {
         u16 modifiers;
         std::string name;
         std::string descriptor;
+
+        InsnList instructions;
 
         std::vector<std::unique_ptr<Attribute>> attributes;
 
