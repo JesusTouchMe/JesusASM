@@ -26,6 +26,12 @@ namespace JesusASM::tree {
             attr->emit(attributeBuilder);
         }
 
+        if (!(modifiers & MODULEWEB_FUNCTION_MODIFIER_NATIVE)) {
+            moduleweb::InsnList insnBuilder(builder.getModule());
+            instructions.emit(insnBuilder);
+            insnBuilder.build(attributeBuilder);
+        }
+
         builder
             .modifiers(modifiers)
             .descriptor(name, descriptor)

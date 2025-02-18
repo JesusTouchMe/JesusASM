@@ -3,21 +3,21 @@
 #ifndef JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_MODULEWEB_WRAPPERS_INSNLIST_H
 #define JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_MODULEWEB_WRAPPERS_INSNLIST_H
 
+#include "JesusASM/Opcodes.h"
+
+#include "JesusASM/moduleweb-wrappers/AttributeBuilder.h"
+
 #include "moduleweb/builder/insn_builder.h"
-#include "moduleweb/builder/opcodes.h"
 
 #include <string>
 
 namespace moduleweb {
-    template <class Builder>
-    class AttributeBuilder;
-
     using Label = moduleweb_label;
-    using Opcode = moduleweb_opcodes;
+    using Opcode = JesusASM::Opcode;
 
     class InsnList {
     public:
-        InsnList();
+        explicit InsnList(moduleweb_module_builder* module);
         ~InsnList();
 
         void stackPush(i32 amount);
@@ -45,9 +45,18 @@ namespace moduleweb {
 
         InsnList& addLabel(Label* label);
 
+        template<class Builder>
+        void build(AttributeBuilder<Builder>& builder);
+
     private:
         moduleweb_insn_list mList{};
     };
+
+    template<class Builder>
+    void InsnList::build(AttributeBuilder<Builder>& builder) {
+        moduleweb_attribute_builder_code(&builder.mModulewebBuilder, &mList);
+        builder.build();
+    }
 }
 
 #endif //JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_MODULEWEB_WRAPPERS_INSNLIST_H

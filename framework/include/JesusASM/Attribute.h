@@ -3,7 +3,7 @@
 #ifndef JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_ATTRIBUTE_H
 #define JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_ATTRIBUTE_H 1
 
-#include "moduleweb/builder/attribute_builder.h"
+#include "JesusASM/moduleweb-wrappers/AttributeBuilder.h"
 
 #include <stdexcept>
 #include <string>

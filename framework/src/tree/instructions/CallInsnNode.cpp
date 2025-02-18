@@ -22,13 +22,38 @@ namespace JesusASM::tree {
         if (pos == std::string_view::npos) {
             throw std::runtime_error("Bad descriptor");
         }
+
+        char c = mDescriptor[pos + 1];
+        switch (c) {
+            case 'V':
+                return 0;
+
+            case 'B':
+            case 'S':
+            case 'I':
+            case 'C':
+            case 'Z':
+                return 1;
+
+            case 'R':
+            case 'H':
+            case 'L':
+            case 'D':
+                return 2;
+
+            default:
+                throw std::runtime_error("Bad descriptor");
+        }
     }
 
     i32 CallInsnNode::getStackPops() const {
         i32 arguments = 0;
         bool parsing_ref = false;
 
-        for (char c : mDescriptor) {
+        std::string_view descriptor(mDescriptor);
+        descriptor.remove_prefix(1);
+
+        for (char c : descriptor) {
             if (c == ')') {
                 break;
             }

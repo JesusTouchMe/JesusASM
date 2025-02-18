@@ -13,6 +13,7 @@ namespace moduleweb {
     friend class ClassBuilder;
     friend class FunctionBuilder;
     public:
+        ModuleBuilder();
         ~ModuleBuilder();
 
         [[nodiscard]] moduleweb_module_builder* getModule();

@@ -3,8 +3,9 @@
 #include "JesusASM/moduleweb-wrappers/InsnList.h"
 
 namespace moduleweb {
-    InsnList::InsnList() {
+    InsnList::InsnList(moduleweb_module_builder* module) {
         moduleweb_insn_list_init(&mList);
+        mList.module = module;
     }
 
     InsnList::~InsnList() {
@@ -13,10 +14,16 @@ namespace moduleweb {
 
     void InsnList::stackPush(i32 amount) {
         mList.stack_depth += amount;
+        if (mList.stack_depth > mList.max_stack_depth) {
+            mList.max_stack_depth = mList.stack_depth;
+        }
     }
 
     void InsnList::stackPop(i32 amount) {
         mList.stack_depth -= amount;
+        if (mList.stack_depth > mList.max_stack_depth) {
+            mList.max_stack_depth = mList.stack_depth;
+        }
     }
 
     Label* InsnList::getLabel(std::string_view name) const {

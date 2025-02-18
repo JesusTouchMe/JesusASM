@@ -3,6 +3,8 @@
 #include "JesusASM/tree/InsnList.h"
 #include "JesusASM/moduleweb-wrappers/InsnList.h"
 
+#include <iostream>
+#include <stdexcept>
 
 namespace JesusASM::tree {
     bool InsnList::contains(AbstractInsnNode* insn) const {
@@ -175,6 +177,35 @@ namespace JesusASM::tree {
     }
 
     void InsnList::emit(moduleweb::InsnList& list) {
-        //TODO: implement
+        i32 stackDepth = 0;
+        i32 maxStackDepth = 0;
+
+        AbstractInsnNode* node = mFirst.get();
+        while (node != nullptr) {
+            i32 pops = node->getStackPops();
+            list.stackPop(pops);
+            stackDepth -= pops;
+            maxStackDepth = max(stackDepth, maxStackDepth);
+
+            i32 pushes = node->getStackPushes();
+            list.stackPush(pushes);
+            stackDepth += pushes;
+             maxStackDepth = max(stackDepth, maxStackDepth);
+
+            if (stackDepth < 0) {
+                throw std::runtime_error("Stack underflow during stack depth analysis");
+            }
+
+            node = node->mNext.get();
+        }
+
+        std::cout << "Instruction list stack usage: " << maxStackDepth << "\n";
+
+        node = mFirst.get();
+        while (node != nullptr) {
+            node->emit(list);
+
+            node = node->mNext.get();
+        }
     }
 }

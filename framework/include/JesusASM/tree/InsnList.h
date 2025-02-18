@@ -5,6 +5,8 @@
 
 #include "JesusASM/tree/AbstractInsnNode.h"
 
+#include <iterator>
+
 namespace JesusASM::tree {
     class InsnList {
     public:
@@ -100,8 +102,8 @@ namespace JesusASM::tree {
         void emit(moduleweb::InsnList& list);
 
     private:
-        std::unique_ptr<AbstractInsnNode> mFirst;
-        AbstractInsnNode* mLast;
+        std::unique_ptr<AbstractInsnNode> mFirst = nullptr;
+        AbstractInsnNode* mLast = nullptr;
 
         std::size_t mSize;
     };

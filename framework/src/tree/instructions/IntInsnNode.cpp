@@ -11,6 +11,11 @@ namespace JesusASM::tree {
     IntInsnNode::IntInsnNode(Opcode opcode, OperandSize size, u64 value)
         : IntInsnNode(opcode, size, static_cast<i64>(value)) {}
 
+    i32 IntInsnNode::getStackPushes() const {
+        if (mSize == OperandSize::LONG) return 2;
+        else return 1;
+    }
+
     void IntInsnNode::emit(moduleweb::InsnList& list) {
         switch (mSize) {
             case OperandSize::BYTE:

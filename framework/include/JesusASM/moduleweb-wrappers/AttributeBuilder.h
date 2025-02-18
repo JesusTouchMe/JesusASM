@@ -3,13 +3,13 @@
 #ifndef JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_MODULEWEB_WRAPPERS_ATTRIBUTEBUILDER_H
 #define JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_MODULEWEB_WRAPPERS_ATTRIBUTEBUILDER_H 1
 
-#include "JesusASM/moduleweb-wrappers/InsnList.h"
-
 #include "moduleweb/builder/module_builder.h"
 
 #include <string>
 
 namespace moduleweb {
+    class InsnList;
+
     template <class Builder>
     class AttributeBuilder {
     friend class InsnList;

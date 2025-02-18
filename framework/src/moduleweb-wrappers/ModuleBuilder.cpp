@@ -4,6 +4,10 @@
 #include "JesusASM/moduleweb-wrappers/ModuleInfo.h"
 
 namespace moduleweb {
+    ModuleBuilder::ModuleBuilder() {
+        mModulewebBuilder.constant_pool_index = 1;
+    }
+
     ModuleBuilder::~ModuleBuilder() {
         moduleweb_module_builder_delete(&mModulewebBuilder);
     }

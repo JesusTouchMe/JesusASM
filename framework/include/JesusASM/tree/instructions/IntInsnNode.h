@@ -20,6 +20,8 @@ namespace JesusASM::tree {
         IntInsnNode(Opcode opcode, OperandSize size, i64 value);
         IntInsnNode(Opcode opcode, OperandSize size, u64 value);
 
+        i32 getStackPushes() const override;
+
         void emit(moduleweb::InsnList& list) override;
 
     private:
