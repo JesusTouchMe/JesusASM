@@ -48,12 +48,6 @@ namespace JesusASM::tree {
         switch (mOpcode) {
             case Opcodes::NOT:
             case Opcodes::NEG:
-            case Opcodes::JMPEQ:
-            case Opcodes::JMPNE:
-            case Opcodes::JMPLT:
-            case Opcodes::JMPGT:
-            case Opcodes::JMPLE:
-            case Opcodes::JMPGE:
             case Opcodes::IRETURN:
                 return 1;
 
@@ -67,12 +61,6 @@ namespace JesusASM::tree {
             case Opcodes::XOR:
             case Opcodes::LNOT:
             case Opcodes::LNEG:
-            case Opcodes::JMP_ICMPEQ:
-            case Opcodes::JMP_ICMPNE:
-            case Opcodes::JMP_ICMPLT:
-            case Opcodes::JMP_ICMPGT:
-            case Opcodes::JMP_ICMPLE:
-            case Opcodes::JMP_ICMPGE:
             case Opcodes::ICMP:
             case Opcodes::LRETURN:
                 return 2;

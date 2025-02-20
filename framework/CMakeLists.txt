@@ -27,6 +27,8 @@ set(SOURCES
         src/tree/instructions/InsnNode.cpp
         src/tree/instructions/CallInsnNode.cpp
         src/tree/instructions/IntInsnNode.cpp
+        src/tree/instructions/LabelNode.cpp
+        src/tree/instructions/JumpInsnNode.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h
@@ -50,6 +52,8 @@ set(HEADERS
         src/moduleweb-wrappers/InsnList.cpp
         include/JesusASM/tree/instructions/CallInsnNode.h
         include/JesusASM/tree/instructions/IntInsnNode.h
+        include/JesusASM/tree/instructions/LabelNode.h
+        include/JesusASM/tree/instructions/JumpInsnNode.h
 )
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})

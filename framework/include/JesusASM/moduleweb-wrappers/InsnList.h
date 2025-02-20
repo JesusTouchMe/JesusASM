@@ -20,11 +20,15 @@ namespace moduleweb {
         explicit InsnList(moduleweb_module_builder* module);
         ~InsnList();
 
-        void stackPush(i32 amount);
-        void stackPop(i32 amount);
+        void setStackDepth(i32 depth);
 
         Label* getLabel(std::string_view name) const;
         Label* getLabel(std::string& name) const;
+
+        Label* createLabel(std::string_view name = "");
+        Label* createLabel(std::string& name);
+
+        InsnList& addLabel(Label* label);
 
         InsnList& insn(Opcode opcode);
 
@@ -33,17 +37,14 @@ namespace moduleweb {
         InsnList& callInsn(Opcode opcode, std::string& module,
                        std::string& name, std::string& descriptor);
 
+        InsnList& jumpInsn(Opcode opcode, Label* label);
+
         InsnList& varInsn(Opcode opcode, u16 local);
 
         InsnList& byteInsn(Opcode opcode, i8 value);
         InsnList& shortInsn(Opcode opcode, i16 value);
         InsnList& intInsn(Opcode opcode, i32 value);
         InsnList& longInsn(Opcode opcode, i64 value);
-
-        Label* createLabel(std::string_view name = "");
-        Label* createLabel(std::string& name);
-
-        InsnList& addLabel(Label* label);
 
         template<class Builder>
         void build(AttributeBuilder<Builder>& builder);

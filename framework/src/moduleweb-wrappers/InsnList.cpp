@@ -12,15 +12,8 @@ namespace moduleweb {
         moduleweb_insn_list_uninit(&mList);
     }
 
-    void InsnList::stackPush(i32 amount) {
-        mList.stack_depth += amount;
-        if (mList.stack_depth > mList.max_stack_depth) {
-            mList.max_stack_depth = mList.stack_depth;
-        }
-    }
-
-    void InsnList::stackPop(i32 amount) {
-        mList.stack_depth -= amount;
+    void InsnList::setStackDepth(i32 depth) {
+        mList.stack_depth = depth;
         if (mList.stack_depth > mList.max_stack_depth) {
             mList.max_stack_depth = mList.stack_depth;
         }
@@ -33,6 +26,20 @@ namespace moduleweb {
 
     Label* InsnList::getLabel(std::string& name) const {
         return moduleweb_insn_list_get_label(&mList, name.c_str());
+    }
+
+    Label* InsnList::createLabel(std::string_view name) {
+        std::string temp(name);
+        return createLabel(temp);
+    }
+
+    Label* InsnList::createLabel(std::string& name) {
+        return moduleweb_insn_list_create_label(&mList, name.c_str());
+    }
+
+    InsnList& InsnList::addLabel(Label* label) {
+        moduleweb_insn_list_add_label(&mList, label);
+        return *this;
     }
 
     InsnList& InsnList::insn(Opcode opcode) {
@@ -51,6 +58,11 @@ namespace moduleweb {
 
     InsnList& InsnList::callInsn(Opcode opcode, std::string& module, std::string& name, std::string& descriptor) {
         moduleweb_insn_list_call(&mList, opcode, module.c_str(), name.c_str(), descriptor.c_str());
+        return *this;
+    }
+
+    InsnList& InsnList::jumpInsn(Opcode opcode, Label* label) {
+        moduleweb_insn_list_jump(&mList, opcode, label);
         return *this;
     }
 
@@ -76,20 +88,6 @@ namespace moduleweb {
 
     InsnList& InsnList::longInsn(Opcode opcode, i64 value) {
         moduleweb_insn_list_long(&mList, opcode, value);
-        return *this;
-    }
-
-    Label* InsnList::createLabel(std::string_view name) {
-        std::string temp(name);
-        return createLabel(temp);
-    }
-
-    Label* InsnList::createLabel(std::string& name) {
-        return moduleweb_insn_list_create_label(&mList, name.c_str());
-    }
-
-    InsnList& InsnList::addLabel(Label* label) {
-        moduleweb_insn_list_add_label(&mList, label);
         return *this;
     }
 }

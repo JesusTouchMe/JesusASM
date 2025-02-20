@@ -13,6 +13,7 @@
 
 namespace JesusASM::tree {
     class InsnList;
+    class LabelNode;
 
     enum class InsnType {
         INSN,
@@ -38,10 +39,13 @@ namespace JesusASM::tree {
         [[nodiscard]] virtual i32 getStackPops() const { return 0; }
 
         virtual void emit(moduleweb::InsnList& list) = 0;
+        virtual void preEmit(moduleweb::InsnList& list) {}
 
     protected:
         InsnType mType;
         Opcode mOpcode;
+
+        LabelNode* mLabel = nullptr; // the label or "basic block" this node exists in
 
         explicit AbstractInsnNode(InsnType type, Opcode opcode)
             : mType(type)

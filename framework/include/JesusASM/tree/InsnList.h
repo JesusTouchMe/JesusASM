@@ -3,7 +3,7 @@
 #ifndef JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_TREE_INSNLIST_H
 #define JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_TREE_INSNLIST_H 1
 
-#include "JesusASM/tree/AbstractInsnNode.h"
+#include "JesusASM/tree/instructions/LabelNode.h"
 
 #include <iterator>
 
@@ -105,7 +105,7 @@ namespace JesusASM::tree {
         std::unique_ptr<AbstractInsnNode> mFirst = nullptr;
         AbstractInsnNode* mLast = nullptr;
 
-        std::size_t mSize;
+        std::size_t mSize = 0;
     };
 }
 

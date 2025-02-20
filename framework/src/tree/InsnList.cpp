@@ -1,10 +1,15 @@
 // Copyright 2025 JesusTouchMe
 
 #include "JesusASM/tree/InsnList.h"
+
+#include "JesusASM/tree/instructions/JumpInsnNode.h"
+
 #include "JesusASM/moduleweb-wrappers/InsnList.h"
 
 #include <iostream>
+#include <queue>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace JesusASM::tree {
     bool InsnList::contains(AbstractInsnNode* insn) const {
@@ -177,35 +182,139 @@ namespace JesusASM::tree {
     }
 
     void InsnList::emit(moduleweb::InsnList& list) {
-        i32 stackDepth = 0;
-        i32 maxStackDepth = 0;
+        if (mSize == 0) return;
+
+        if (mFirst->getType() != InsnType::LABEL) {
+            addFront(std::make_unique<LabelNode>());
+        }
+
+        LabelNode* currentLabel = nullptr;
 
         AbstractInsnNode* node = mFirst.get();
         while (node != nullptr) {
-            i32 pops = node->getStackPops();
-            list.stackPop(pops);
-            stackDepth -= pops;
-            maxStackDepth = max(stackDepth, maxStackDepth);
-
-            i32 pushes = node->getStackPushes();
-            list.stackPush(pushes);
-            stackDepth += pushes;
-             maxStackDepth = max(stackDepth, maxStackDepth);
-
-            if (stackDepth < 0) {
-                throw std::runtime_error("Stack underflow during stack depth analysis");
+            if (node->getType() == InsnType::LABEL) {
+                currentLabel = static_cast<LabelNode*>(node);
+            } else {
+                node->mLabel = currentLabel;
             }
 
-            node = node->mNext.get();
+            node->preEmit(list);
+
+            node = node->getNext();
         }
 
-        std::cout << "Instruction list stack usage: " << maxStackDepth << "\n";
+        std::unordered_map<AbstractInsnNode*, i32> stackDepthMap;
+        std::unordered_map<AbstractInsnNode*, i32> predecessorCount;
+        std::queue<AbstractInsnNode*> worklist;
+        std::queue<AbstractInsnNode*> discoveryQueue;
+
+        discoveryQueue.push(mFirst.get());
+
+        while (!discoveryQueue.empty()) {
+            AbstractInsnNode* insn = discoveryQueue.front();
+            discoveryQueue.pop();
+
+            if (predecessorCount.find(insn) != predecessorCount.end()) {
+                continue;
+            }
+
+            predecessorCount[insn] = 0;
+
+            if (insn->getType() == InsnType::LABEL) {
+                auto label = static_cast<LabelNode*>(insn);
+                predecessorCount[insn] = label->mPredecessors.size();
+
+                for (auto successor : label->mSuccessors) {
+                    discoveryQueue.push(successor);
+                }
+            }
+
+            if (insn->getType() == InsnType::JUMP) {
+                auto jump = static_cast<JumpInsnNode*>(insn);
+                discoveryQueue.push(jump->mDestination);
+
+                if (jump->mOpcode != Opcodes::JMP && jump->getNext() != nullptr) {
+                    discoveryQueue.push(jump->getNext());
+                    predecessorCount[jump->getNext()]++;
+                }
+            } else if (insn->getNext() != nullptr) {
+                discoveryQueue.push(insn->getNext());
+                predecessorCount[insn->getNext()]++;
+            }
+        }
+
+        stackDepthMap[mFirst.get()] = 0;
+        worklist.push(mFirst.get());
+
+        while (!worklist.empty()) {
+            AbstractInsnNode* insn = worklist.front();
+            worklist.pop();
+
+            i32 currentDepth = stackDepthMap[insn];
+            i32 newDepth = currentDepth - insn->getStackPops() + insn->getStackPushes();
+            if (newDepth < 0) {
+                throw std::runtime_error("Stack underflow");
+            }
+
+            list.setStackDepth(newDepth);
+
+            std::vector<AbstractInsnNode*> successors;
+
+            if (insn->getType() == InsnType::LABEL) {
+                auto label = static_cast<LabelNode*>(insn);
+
+                i32 mergedDepth = (stackDepthMap.find(insn) != stackDepthMap.end())
+                                  ? stackDepthMap[insn]
+                                  : newDepth;
+
+                for (auto pred : label->mPredecessors) {
+                    if (stackDepthMap.find(pred) != stackDepthMap.end()) {
+                        mergedDepth = max(mergedDepth, stackDepthMap[pred]);
+                    }
+                }
+
+                newDepth = mergedDepth;
+
+                for (auto successor : label->mSuccessors) {
+                    if (stackDepthMap.find(successor) == stackDepthMap.end()
+                        || newDepth > stackDepthMap[successor]) {
+                        stackDepthMap[successor] = newDepth;
+                        worklist.push(successor);
+                    } else {
+                        worklist.push(successor);
+                    }
+                }
+            }
+
+            if (insn->getType() == InsnType::JUMP) {
+                auto jump = static_cast<JumpInsnNode*>(insn);
+
+                if (stackDepthMap.find(jump->mDestination) == stackDepthMap.end()
+                    || newDepth > stackDepthMap[jump->mDestination]) {
+                    stackDepthMap[jump->mDestination] = newDepth;
+                    worklist.push(jump->mDestination);
+                }
+
+                if (jump->mOpcode != Opcodes::JMP && jump->getNext() != nullptr) { // for conditional jumps, also process the "false" block
+                    successors.push_back(jump->getNext());
+                }
+            } else if (insn->getNext() != nullptr) {
+                successors.push_back(insn->getNext());
+            }
+
+            for (auto successor : successors) {
+                if (stackDepthMap.find(successor) == stackDepthMap.end()
+                    || newDepth > stackDepthMap[successor]) {
+                    stackDepthMap[successor] = newDepth;
+                    worklist.push(successor);
+                }
+            }
+        }
 
         node = mFirst.get();
         while (node != nullptr) {
             node->emit(list);
-
-            node = node->mNext.get();
+            node = node->getNext();
         }
     }
 }
