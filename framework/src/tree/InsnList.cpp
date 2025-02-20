@@ -184,127 +184,88 @@ namespace JesusASM::tree {
     void InsnList::emit(moduleweb::InsnList& list) {
         if (mSize == 0) return;
 
+        LabelNode* currentLabel = nullptr;
+
         if (mFirst->getType() != InsnType::LABEL) {
             addFront(std::make_unique<LabelNode>());
         }
-
-        LabelNode* currentLabel = nullptr;
 
         AbstractInsnNode* node = mFirst.get();
         while (node != nullptr) {
             if (node->getType() == InsnType::LABEL) {
                 currentLabel = static_cast<LabelNode*>(node);
-            } else {
-                node->mLabel = currentLabel;
             }
+
+            node->mLabel = currentLabel;
 
             node->preEmit(list);
 
             node = node->getNext();
         }
 
-        std::unordered_map<AbstractInsnNode*, i32> stackDepthMap;
-        std::unordered_map<AbstractInsnNode*, i32> predecessorCount;
-        std::queue<AbstractInsnNode*> worklist;
-        std::queue<AbstractInsnNode*> discoveryQueue;
+        std::unordered_map<LabelNode*, i32> stackDepthMap;
+        std::queue<LabelNode*> worklist;
 
-        discoveryQueue.push(mFirst.get());
-
-        while (!discoveryQueue.empty()) {
-            AbstractInsnNode* insn = discoveryQueue.front();
-            discoveryQueue.pop();
-
-            if (predecessorCount.find(insn) != predecessorCount.end()) {
-                continue;
-            }
-
-            predecessorCount[insn] = 0;
-
-            if (insn->getType() == InsnType::LABEL) {
-                auto label = static_cast<LabelNode*>(insn);
-                predecessorCount[insn] = label->mPredecessors.size();
-
-                for (auto successor : label->mSuccessors) {
-                    discoveryQueue.push(successor);
-                }
-            }
-
-            if (insn->getType() == InsnType::JUMP) {
-                auto jump = static_cast<JumpInsnNode*>(insn);
-                discoveryQueue.push(jump->mDestination);
-
-                if (jump->mOpcode != Opcodes::JMP && jump->getNext() != nullptr) {
-                    discoveryQueue.push(jump->getNext());
-                    predecessorCount[jump->getNext()]++;
-                }
-            } else if (insn->getNext() != nullptr) {
-                discoveryQueue.push(insn->getNext());
-                predecessorCount[insn->getNext()]++;
-            }
-        }
-
-        stackDepthMap[mFirst.get()] = 0;
-        worklist.push(mFirst.get());
+        stackDepthMap[static_cast<LabelNode*>(mFirst.get())] = 0;
+        worklist.push(static_cast<LabelNode*>(mFirst.get()));
 
         while (!worklist.empty()) {
-            AbstractInsnNode* insn = worklist.front();
+            auto label = worklist.front();
             worklist.pop();
 
-            i32 currentDepth = stackDepthMap[insn];
-            i32 newDepth = currentDepth - insn->getStackPops() + insn->getStackPushes();
-            if (newDepth < 0) {
-                throw std::runtime_error("Stack underflow");
+            i32 currentDepth = stackDepthMap[label];
+            i32 newDepth = currentDepth;
+
+            for (auto pred : label->mPredecessors) {
+                if (stackDepthMap.contains(pred)) {
+                    newDepth = max(newDepth, stackDepthMap[pred]);
+                }
             }
 
-            list.setStackDepth(newDepth);
+            AbstractInsnNode* it = label;
+            while (it != nullptr && it->mLabel == label) { // same as doing for auto insn : label.getInstructions() if label contained its own list of instructions
+                newDepth -= it->getStackPops();
+                newDepth += it->getStackPushes();
 
-            std::vector<AbstractInsnNode*> successors;
-
-            if (insn->getType() == InsnType::LABEL) {
-                auto label = static_cast<LabelNode*>(insn);
-
-                i32 mergedDepth = (stackDepthMap.find(insn) != stackDepthMap.end())
-                                  ? stackDepthMap[insn]
-                                  : newDepth;
-
-                for (auto pred : label->mPredecessors) {
-                    if (stackDepthMap.find(pred) != stackDepthMap.end()) {
-                        mergedDepth = max(mergedDepth, stackDepthMap[pred]);
-                    }
+                if (newDepth < 0) {
+                    throw std::runtime_error("Stack underflow");
                 }
 
-                newDepth = mergedDepth;
+                list.setStackDepth(newDepth);
 
-                for (auto successor : label->mSuccessors) {
-                    if (stackDepthMap.find(successor) == stackDepthMap.end()
-                        || newDepth > stackDepthMap[successor]) {
-                        stackDepthMap[successor] = newDepth;
-                        worklist.push(successor);
+                if (it->getType() == InsnType::JUMP) {
+                    auto jump = static_cast<JumpInsnNode*>(it);
+
+                    if (jump->mOpcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
+                        LabelNode* dest = jump->mDestination;
+                        if (!stackDepthMap.contains(dest) || newDepth > stackDepthMap[dest]) {
+                            stackDepthMap[dest] = newDepth;
+                            worklist.push(dest);
+                        }
+
+                        break;
                     } else {
-                        worklist.push(successor);
+                        LabelNode* target = jump->mDestination;
+                        LabelNode* fallThrough = jump->getNext() == nullptr ? nullptr : jump->getNext()->mLabel;
+
+                        if (!stackDepthMap.contains(target) || newDepth > stackDepthMap[target]) {
+                            stackDepthMap[target] = newDepth;
+                            worklist.push(target);
+                        }
+                        if (fallThrough != nullptr) {
+                            if (!stackDepthMap.contains(fallThrough) || newDepth > stackDepthMap[fallThrough]) {
+                                stackDepthMap[fallThrough] = newDepth;
+                                worklist.push(fallThrough);
+                            }
+                        }
                     }
                 }
+
+                it = it->getNext();
             }
 
-            if (insn->getType() == InsnType::JUMP) {
-                auto jump = static_cast<JumpInsnNode*>(insn);
-
-                if (stackDepthMap.find(jump->mDestination) == stackDepthMap.end()
-                    || newDepth > stackDepthMap[jump->mDestination]) {
-                    stackDepthMap[jump->mDestination] = newDepth;
-                    worklist.push(jump->mDestination);
-                }
-
-                if (jump->mOpcode != Opcodes::JMP && jump->getNext() != nullptr) { // for conditional jumps, also process the "false" block
-                    successors.push_back(jump->getNext());
-                }
-            } else if (insn->getNext() != nullptr) {
-                successors.push_back(insn->getNext());
-            }
-
-            for (auto successor : successors) {
-                if (stackDepthMap.find(successor) == stackDepthMap.end()
-                    || newDepth > stackDepthMap[successor]) {
+            for (auto successor : label->mSuccessors) {
+                if (!stackDepthMap.contains(successor) || newDepth > stackDepthMap[successor]) {
                     stackDepthMap[successor] = newDepth;
                     worklist.push(successor);
                 }
