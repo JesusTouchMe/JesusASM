@@ -1,0 +1,29 @@
+class Vec2 {
+    public int x;
+    public int y;
+}
+
+public native void print(int);
+
+public void main() {
+    Code {
+        ipush 2
+        ipush 2
+        add
+
+        ipush 4
+
+        jmp_icmpeq equal
+
+        const_0
+        jmp end
+
+    equal:
+        const_1
+    end:
+
+        call Function Main:print:(I)V
+
+        return
+    }
+}
