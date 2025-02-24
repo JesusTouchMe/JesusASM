@@ -22,6 +22,8 @@ namespace JesusASM::tree {
 
         i32 getStackPushes() const override;
 
+        i32 getStackPops() const override;
+
         void emit(moduleweb::InsnList& list) override;
 
     private:

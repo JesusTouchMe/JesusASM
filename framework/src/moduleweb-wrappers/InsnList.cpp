@@ -13,9 +13,17 @@ namespace moduleweb {
     }
 
     void InsnList::setStackDepth(i32 depth) {
-        mList.stack_depth = depth;
-        if (mList.stack_depth > mList.max_stack_depth) {
-            mList.max_stack_depth = mList.stack_depth;
+        mStackDepth = depth;
+        if (mStackDepth > mList.max_stack_depth) {
+            mList.max_stack_depth = mStackDepth;
+        }
+    }
+
+    void InsnList::setLocalIndex(u16 index) {
+        index += 1;
+
+        if (index > mList.local_count) {
+            mList.local_count = index;
         }
     }
 
@@ -63,6 +71,36 @@ namespace moduleweb {
 
     InsnList& InsnList::jumpInsn(Opcode opcode, Label* label) {
         moduleweb_insn_list_jump(&mList, opcode, label);
+        return *this;
+    }
+
+    InsnList& InsnList::classInsn(Opcode opcode, std::string_view module, std::string_view name) {
+        std::string tempModule(module);
+        std::string tempName(name);
+
+        return classInsn(opcode, tempModule, tempName);
+    }
+
+    InsnList& InsnList::classInsn(Opcode opcode, std::string& module, std::string& name) {
+        moduleweb_insn_list_class(&mList, opcode, module.c_str(), name.c_str());
+        return *this;
+    }
+
+    InsnList& InsnList::fieldInsn(Opcode opcode, std::string_view ownerModule, std::string_view owner,
+                                  std::string_view name, std::string_view descriptor) {
+        std::string tempOwnerModule(ownerModule);
+        std::string tempOwner(owner);
+        std::string tempName(name);
+        std::string tempDescriptor(descriptor);
+
+        return fieldInsn(opcode, tempOwnerModule, tempOwner, tempName, tempDescriptor);
+    }
+
+    InsnList& InsnList::fieldInsn(Opcode opcode, std::string& ownerModule, std::string& owner,
+                                  std::string& name, std::string& descriptor) {
+        moduleweb_insn_list_field(&mList, opcode, ownerModule.c_str(), owner.c_str(),
+                                  name.c_str(), descriptor.c_str());
+
         return *this;
     }
 

@@ -36,6 +36,7 @@ namespace JesusASM::tree {
                 return 1;
 
             case 'R':
+            case '[':
             case 'H':
             case 'L':
             case 'D':
@@ -48,26 +49,26 @@ namespace JesusASM::tree {
 
     i32 CallInsnNode::getStackPops() const {
         i32 arguments = 0;
-        bool parsing_ref = false;
+        bool parsingRef = false;
 
         std::string_view descriptor(mDescriptor);
         descriptor.remove_prefix(1);
 
-        for (char c : descriptor) {
+        for (char c : descriptor) { // TODO: support array type
             if (c == ')') {
                 break;
             }
 
-            if (parsing_ref) {
+            if (parsingRef) {
                 if (c == ';') {
-                    parsing_ref = false;
+                    parsingRef = false;
                     arguments += 2; // 2 values because 64 bits
                 }
                 continue;
             }
 
             if (c == 'R') {
-                parsing_ref = true;
+                parsingRef = true;
                 continue;
             }
 

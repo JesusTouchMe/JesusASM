@@ -16,10 +16,20 @@ namespace JesusASM::tree {
             case Opcodes::AND:
             case Opcodes::OR:
             case Opcodes::XOR:
+            case Opcodes::SHL:
+            case Opcodes::SHR:
             case Opcodes::NOT:
             case Opcodes::NEG:
+            case Opcodes::DUP:
+            case Opcodes::BALOAD:
+            case Opcodes::CALOAD:
+            case Opcodes::SALOAD:
+            case Opcodes::IALOAD:
+            case Opcodes::ARRAYLENGTH:
             case Opcodes::ICMP:
             case Opcodes::LCMP:
+            case Opcodes::HCMP:
+            case Opcodes::RCMP:
             case Opcodes::CONST_M1:
             case Opcodes::CONST_0:
             case Opcodes::CONST_1:
@@ -33,9 +43,15 @@ namespace JesusASM::tree {
             case Opcodes::LAND:
             case Opcodes::LOR:
             case Opcodes::LXOR:
+            case Opcodes::LSHL:
+            case Opcodes::LSHR:
             case Opcodes::LNOT:
             case Opcodes::LNEG:
-            case Opcodes::LPUSH:
+            case Opcodes::DUP2:
+            case Opcodes::RLOAD_0:
+            case Opcodes::LALOAD:
+            case Opcodes::HALOAD:
+            case Opcodes::RALOAD:
             case Opcodes::LCONST_0:
             case Opcodes::LCONST_1:
                 return 2;
@@ -59,6 +75,8 @@ namespace JesusASM::tree {
             case Opcodes::AND:
             case Opcodes::OR:
             case Opcodes::XOR:
+            case Opcodes::SHL:
+            case Opcodes::SHR:
             case Opcodes::LNOT:
             case Opcodes::LNEG:
             case Opcodes::ICMP:
@@ -73,8 +91,31 @@ namespace JesusASM::tree {
             case Opcodes::LAND:
             case Opcodes::LOR:
             case Opcodes::LXOR:
+            case Opcodes::LSHL:
+            case Opcodes::LSHR:
             case Opcodes::LCMP:
+            case Opcodes::HCMP:
+            case Opcodes::RCMP:
                 return 4;
+
+            case Opcodes::BALOAD:
+            case Opcodes::CALOAD:
+            case Opcodes::SALOAD:
+            case Opcodes::IALOAD:
+            case Opcodes::LALOAD:
+            case Opcodes::HALOAD:
+            case Opcodes::RALOAD:
+                return 3;
+
+            case Opcodes::BASTORE:
+            case Opcodes::CASTORE:
+            case Opcodes::SASTORE:
+            case Opcodes::IASTORE:
+                return 4;
+            case Opcodes::LASTORE:
+            case Opcodes::HASTORE:
+            case Opcodes::RASTORE:
+                return 5;
         }
 
         return 0;

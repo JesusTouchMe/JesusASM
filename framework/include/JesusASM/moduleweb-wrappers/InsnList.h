@@ -21,6 +21,7 @@ namespace moduleweb {
         ~InsnList();
 
         void setStackDepth(i32 depth);
+        void setLocalIndex(u16 index);
 
         Label* getLabel(std::string_view name) const;
         Label* getLabel(std::string& name) const;
@@ -33,11 +34,19 @@ namespace moduleweb {
         InsnList& insn(Opcode opcode);
 
         InsnList& callInsn(Opcode opcode, std::string_view module,
-                       std::string_view name, std::string_view descriptor);
+                           std::string_view name, std::string_view descriptor);
         InsnList& callInsn(Opcode opcode, std::string& module,
-                       std::string& name, std::string& descriptor);
+                           std::string& name, std::string& descriptor);
 
         InsnList& jumpInsn(Opcode opcode, Label* label);
+
+        InsnList& classInsn(Opcode opcode, std::string_view module, std::string_view name);
+        InsnList& classInsn(Opcode opcode, std::string& module, std::string& name);
+
+        InsnList& fieldInsn(Opcode opcode, std::string_view ownerModule, std::string_view owner,
+                            std::string_view name, std::string_view descriptor);
+        InsnList& fieldInsn(Opcode opcode, std::string& ownerModule, std::string& owner,
+                            std::string& name, std::string& descriptor);
 
         InsnList& varInsn(Opcode opcode, u16 local);
 
@@ -51,6 +60,7 @@ namespace moduleweb {
 
     private:
         moduleweb_insn_list mList{};
+        i32 mStackDepth = 0;
     };
 
     template<class Builder>

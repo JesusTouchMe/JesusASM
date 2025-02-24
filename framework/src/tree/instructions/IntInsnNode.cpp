@@ -12,8 +12,20 @@ namespace JesusASM::tree {
         : IntInsnNode(opcode, size, static_cast<i64>(value)) {}
 
     i32 IntInsnNode::getStackPushes() const {
+        if (mOpcode == Opcodes::NEWARRAY) {
+            return 2;
+        }
+
         if (mSize == OperandSize::LONG) return 2;
         else return 1;
+    }
+
+    i32 IntInsnNode::getStackPops() const {
+        if (mOpcode == Opcodes::NEWARRAY) {
+            return 1;
+        }
+
+        return 0;
     }
 
     void IntInsnNode::emit(moduleweb::InsnList& list) {

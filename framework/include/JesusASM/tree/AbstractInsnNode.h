@@ -20,6 +20,8 @@ namespace JesusASM::tree {
         CALL,
         LABEL,
         JUMP,
+        CLASS,
+        FIELD,
         VAR,
         INT,
     };
