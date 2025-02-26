@@ -9,7 +9,14 @@ FetchContent_Declare(
     SOURCE_SUBDIR moduleweb
 )
 
+FetchContent_Declare(
+        vlex
+        GIT_REPOSITORY https://github.com/viper-org/vlex.git
+        GIT_TAG master
+)
+
 FetchContent_MakeAvailable(moduleweb)
+FetchContent_MakeAvailable(vlex)
 
 set(SOURCES
     src/moduleweb-wrappers/OutStream.cpp
@@ -64,23 +71,25 @@ set(HEADERS
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
 
-add_library(jesusasm-framework-jesusasm-framework ${SOURCES} ${HEADERS})
-add_library(JesusASM::framework ALIAS jesusasm-framework-jesusasm-framework)
+add_library(jesusasm-framework ${SOURCES} ${HEADERS})
+add_library(JesusASM::framework ALIAS jesusasm-framework)
 
-target_include_directories(jesusasm-framework-jesusasm-framework
+vlex_generate(jesusasm-framework src/lexer/Lexer.vlex src/lexer include/JesusASM/lexer)
+
+target_include_directories(jesusasm-framework
     PUBLIC
         include
 )
 
 if(WIN32)
-    target_compile_definitions(jesusasm-framework-jesusasm-framework PUBLIC PLATFORM_WINDOWS)
+    target_compile_definitions(jesusasm-framework PUBLIC PLATFORM_WINDOWS)
 elseif(APPLE)
-    target_compile_definitions(jesusasm-framework-jesusasm-framework PUBLIC PLATFORM_MACOS)
+    target_compile_definitions(jesusasm-framework PUBLIC PLATFORM_MACOS)
 elseif(UNIX AND NOT APPLE)
-    target_compile_definitions(jesusasm-framework-jesusasm-framework PUBLIC PLATFORM_LINUX)
+    target_compile_definitions(jesusasm-framework PUBLIC PLATFORM_LINUX)
 endif()
 
-target_compile_features(jesusasm-framework-jesusasm-framework PUBLIC cxx_std_20)
+target_compile_features(jesusasm-framework PUBLIC cxx_std_20)
 
-add_dependencies(jesusasm-framework-jesusasm-framework JesusVM::moduleweb)
-target_link_libraries(jesusasm-framework-jesusasm-framework PUBLIC JesusVM::moduleweb)
+add_dependencies(jesusasm-framework JesusVM::moduleweb)
+target_link_libraries(jesusasm-framework PUBLIC JesusVM::moduleweb)

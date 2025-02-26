@@ -1,0 +1,38 @@
+tokens {
+    {
+    }
+    (
+    )
+    :
+    ;
+
+    _identifier
+    _integer_literal
+
+    bool TYPE
+    byte TYPE
+    char TYPE
+    short TYPE
+    int TYPE
+    long TYPE
+    handle TYPE
+    void TYPE
+
+    class
+
+    abstract
+    async
+    const
+    final
+    native
+    public
+    private
+    protected
+    pure
+    volatile
+
+    add INSTRUCTION
+    ipush INSTRUCTION
+    call INSTRUCTION
+    return INSTRUCTION
+}

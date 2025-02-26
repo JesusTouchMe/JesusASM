@@ -11,18 +11,7 @@ public void main() {
         ipush 2
         add
 
-        ipush 4
-
-        jmp_icmpeq equal
-
-        const_0
-        jmp end
-
-    equal:
-        const_1
-    end:
-
-        call Function Main:print:(I)V
+        call Main:print:(I)V
 
         return
     }
