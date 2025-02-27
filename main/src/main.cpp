@@ -2,6 +2,9 @@
 
 #include "JesusASM/tree/ModuleNode.h"
 
+#include "JesusASM/lexer/Lexer.h"
+#include "JesusASM/lexer/Token.h"
+
 #include "JesusASM/tree/instructions/CallInsnNode.h"
 #include "JesusASM/tree/instructions/ClassInsnNode.h"
 #include "JesusASM/tree/instructions/FieldInsnNode.h"
@@ -11,7 +14,9 @@
 #include "JesusASM/tree/instructions/LabelNode.h"
 #include "JesusASM/tree/instructions/VarInsnNode.h"
 
+#include <fstream>
 #include <iostream>
+#include <sstream>
 
 void GenerateMain() {
     JesusASM::tree::ModuleNode module(1, std::string_view("Main"));
@@ -94,8 +99,19 @@ void GenerateVMSystem() {
 }
 
 int main(int argc, char** argv) {
-    GenerateVMSystem();
-    GenerateMain();
+    std::ifstream input("Main.jasm");
+    std::stringstream buffer;
+    buffer << input.rdbuf();
+
+    std::string text = buffer.str();
+
+    lexer::Lexer lexer(text, "Main.jasm");
+
+    std::vector<lexer::Token> tokens = lexer.lex();
+
+    for (const auto& token: tokens) {
+        std::cout << token.getName() << "\n";
+    }
 
     return 0;
 }
