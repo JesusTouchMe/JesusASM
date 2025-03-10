@@ -8,9 +8,6 @@ namespace JesusASM::tree {
         , mSize(size)
         , mValue(value) {}
 
-    IntInsnNode::IntInsnNode(Opcode opcode, OperandSize size, u64 value)
-        : IntInsnNode(opcode, size, static_cast<i64>(value)) {}
-
     i32 IntInsnNode::getStackPushes() const {
         if (mOpcode == Opcodes::NEWARRAY) {
             return 2;

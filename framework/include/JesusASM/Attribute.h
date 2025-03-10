@@ -16,7 +16,15 @@ namespace JesusASM {
     public:
         Attribute(std::string_view name, const void* info, u32 size);
 
-        inline Attribute(std::string_view name, std::string_view info) : Attribute(name, info.data(), info.length()) {}
+        inline Attribute(std::string_view name, std::string_view info)
+            : Attribute(name, info.data(), info.length()) {}
+
+        template <std::size_t N>
+        inline Attribute(std::string_view name, const char(&info)[N])
+            : Attribute(name, info, N - 1) {}
+
+        inline Attribute(std::string_view name, bool info)
+            : Attribute(name, &info, 1) {}
 
         ~Attribute();
 

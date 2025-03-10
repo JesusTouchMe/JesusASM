@@ -1,24 +1,30 @@
 tokens {
+    +
+    -
+    *
+    /
     {
     _right_brace
     (
     )
     :
     ;
+    ,
 
     _identifier
     _integer_literal
 
-    bool TYPE
-    byte TYPE
-    char TYPE
-    short TYPE
-    int TYPE
-    long TYPE
-    handle TYPE
-    void TYPE
+    bool Type
+    byte Type
+    char Type
+    short Type
+    int Type
+    long Type
+    handle Type
+    void Type
 
     class
+    extends
 
     abstract
     async
@@ -31,8 +37,110 @@ tokens {
     pure
     volatile
 
-    add INSTRUCTION
-    ipush INSTRUCTION
-    call INSTRUCTION
-    return INSTRUCTION
+    nop Instruction
+    add Instruction
+    sub Instruction
+    mul Instruction
+    div Instruction
+    rem Instruction
+    ladd Instruction
+    lsub Instruction
+    lmul Instruction
+    ldiv Instruction
+    lrem Instruction
+    and Instruction
+    or Instruction
+    xor Instruction
+    shl Instruction
+    shr Instruction
+    land Instruction
+    lor Instruction
+    lxor Instruction
+    lshl Instruction
+    lshr Instruction
+    not Instruction
+    neg Instruction
+    lnot Instruction
+    lneg Instruction
+    dup Instruction
+    dup2 Instruction
+    swap Instruction
+    swap2 Instruction
+    iload Instruction
+    istore Instruction
+    lload Instruction
+    lstore Instruction
+    hload Instruction
+    hstore Instruction
+    rload Instruction
+    rstore Instruction
+    rload_0 Instruction
+    baload Instruction
+    bastore Instruction
+    caload Instruction
+    castore Instruction
+    saload Instruction
+    sastore Instruction
+    iaload Instruction
+    iastore Instruction
+    laload Instruction
+    lastore Instruction
+    haload Instruction
+    hastore Instruction
+    raload Instruction
+    rastore Instruction
+    arraylength Instruction
+    new Instruction
+    newarray Instruction
+    rnewarray Instruction
+    isinstance Instruction
+    getfield Instruction
+    setfield Instruction
+    jmp_icmpeq Instruction
+    jmp_icmpne Instruction
+    jmp_icmplt Instruction
+    jmp_icmpgt Instruction
+    jmp_icmple Instruction
+    jmp_icmpge Instruction
+    jmp_hcmpeq Instruction
+    jmp_hcmpne Instruction
+    jmp_rcmpeq Instruction
+    jmp_rcmpne Instruction
+    jmp_hnull Instruction
+    jmp_hnonnull Instruction
+    jmp_rnull Instruction
+    jmp_rnonnull Instruction
+    jmpeq Instruction
+    jmpne Instruction
+    jmplt Instruction
+    jmpgt Instruction
+    jmple Instruction
+    jmpge Instruction
+    jmp Instruction
+    icmp Instruction
+    lcmp Instruction
+    hcmp Instruction
+    rcmp Instruction
+    bpush Instruction
+    spush Instruction
+    ipush Instruction
+    lpush Instruction
+    i2b Instruction
+    i2s Instruction
+    i2l Instruction
+    l2i Instruction
+    const_m1 Instruction
+    const_0 Instruction
+    const_1 Instruction
+    lconst_0 Instruction
+    lconst_1 Instruction
+    hconst_null Instruction
+    rconst_null Instruction
+    call Instruction
+    return Instruction
+    ireturn Instruction
+    lreturn Instruction
+    hreturn Instruction
+    rreturn Instruction
+
 }

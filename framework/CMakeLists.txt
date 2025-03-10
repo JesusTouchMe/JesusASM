@@ -39,6 +39,9 @@ set(SOURCES
         src/tree/instructions/ClassInsnNode.cpp
         src/tree/instructions/FieldInsnNode.cpp
         src/tree/instructions/VarInsnNode.cpp
+        src/type/Type.cpp
+        src/parser/ExpressionParser.cpp
+        src/parser/Parser.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h
@@ -67,6 +70,11 @@ set(HEADERS
         include/JesusASM/tree/instructions/ClassInsnNode.h
         include/JesusASM/tree/instructions/FieldInsnNode.h
         include/JesusASM/tree/instructions/VarInsnNode.h
+        include/JesusASM/parser/Parser.h
+        include/JesusASM/parser/InstructionParser.h
+        include/JesusASM/type/Type.h
+        include/JesusASM/parser/ExpressionParser.h
+        include/JesusASM/parser/TokenStream.h
 )
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})

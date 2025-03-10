@@ -29,7 +29,7 @@ namespace JesusASM::tree {
             return 2; // the checked object
         }
 
-        if (mOpcode == Opcodes::RNEWARRAY) {
+        if (mOpcode == Opcodes::RNEWARRAY || mOpcode == Opcodes::NEWARRAY) {
             return 1; // length
         }
 

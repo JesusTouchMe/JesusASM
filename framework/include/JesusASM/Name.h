@@ -22,7 +22,7 @@ namespace JesusASM {
         template <std::size_t N>
         constexpr Name(const char (&qualifiedName)[N]) : Name(std::string_view(qualifiedName, N - 1)) {}
 
-        constexpr explicit Name(std::string_view qualifiedName) {
+        constexpr Name(std::string_view qualifiedName) {
             auto pos = qualifiedName.rfind(':');
             if (pos != std::string_view::npos) {
                 moduleName = qualifiedName.substr(0, pos);
@@ -34,6 +34,18 @@ namespace JesusASM {
 
         constexpr Name(std::string_view moduleName, std::string_view name) : moduleName(moduleName), name(name) {}
         constexpr Name(std::string&& moduleName, std::string&& name) : moduleName(std::move(moduleName)), name(std::move(name)) {}
+
+        constexpr Name& operator=(std::string_view qualifiedName) {
+            auto pos = qualifiedName.rfind(':');
+            if (pos != std::string_view::npos) {
+                moduleName = qualifiedName.substr(0, pos);
+                name = qualifiedName.substr(pos + 1);
+            } else {
+                throw std::invalid_argument("Invalid qualified name format");
+            }
+
+            return *this;
+        }
 
         [[nodiscard]] constexpr bool hasValue() const noexcept {
             return !moduleName.empty() && !name.empty();

@@ -13,7 +13,7 @@
 
 namespace JesusASM::tree {
     struct ClassNode {
-        u16 modifiers;
+        u16 modifiers = 0;
         std::string name;
         Name superClass;
 

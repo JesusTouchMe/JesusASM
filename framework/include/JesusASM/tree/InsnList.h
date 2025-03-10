@@ -83,6 +83,8 @@ namespace JesusASM::tree {
 
         [[nodiscard]] bool contains(AbstractInsnNode* insn) const;
 
+        LabelNode* findLabel(std::string_view name) const;
+
         void add(std::unique_ptr<AbstractInsnNode> insn);
         void add(InsnList& list);
 

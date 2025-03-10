@@ -7,11 +7,27 @@ public native void print(int);
 
 public void main() {
     Code {
-        ipush 2
-        ipush 2
+        new Main:Vec2
+        dup2
+        rstore 0
+
+        rload_0
+        ipush 34
+        setfield Main:Vec2:x:int
+
+        rload_0
+        ipush 35
+        setfield Main:Vec2:y:int
+
+        rload_0
+        getfield Main:Vec2:x:int
+
+        rload_0
+        getfield Main:Vec2:y:int
+
         add
 
-        call Main:print:(I)V
+        call Main:print:void(int)
 
         return
     }

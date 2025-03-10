@@ -21,6 +21,18 @@ namespace JesusASM::tree {
         return i != nullptr;
     }
 
+    LabelNode* InsnList::findLabel(std::string_view name) const {
+        AbstractInsnNode* i = mFirst.get();
+        while (i != nullptr) {
+            if (i->mType == InsnType::LABEL) {
+                auto label = static_cast<LabelNode*>(i);
+                if (label->mName == name) return label;
+            }
+        }
+
+        return nullptr;
+    }
+
     void InsnList::add(std::unique_ptr<AbstractInsnNode> insn) {
         mSize++;
 

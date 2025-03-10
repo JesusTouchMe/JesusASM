@@ -18,7 +18,6 @@ namespace JesusASM::tree {
     class IntInsnNode : public AbstractInsnNode {
     public:
         IntInsnNode(Opcode opcode, OperandSize size, i64 value);
-        IntInsnNode(Opcode opcode, OperandSize size, u64 value);
 
         i32 getStackPushes() const override;
 
