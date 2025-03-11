@@ -17,6 +17,7 @@ namespace JesusASM {
         static void Init();
         static Type* GetBuiltinType(std::string_view name);
         static Type* GetClassType(std::string_view moduleName, std::string_view className);
+        static Type* GetArrayType(Type* baseType);
         static Type* GetFunctionType(Type* returnType, const std::vector<Type*>& argTypes);
 
     private:

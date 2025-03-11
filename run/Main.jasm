@@ -5,24 +5,100 @@ class Vec2 {
 
 public native void print(int);
 
-public void main() {
+public void init(Main:Vec2, int, int) {
     Code {
-        new Main:Vec2
-        dup2
-        rstore 0
-
         rload_0
-        ipush 34
+        iload 2
         setfield Main:Vec2:x:int
 
         rload_0
-        ipush 35
+        iload 3
         setfield Main:Vec2:y:int
+
+        return
+    }
+}
+
+public Main:Vec2 _add(Main:Vec2, Main:Vec2) {
+    Code {
+        new Main:Vec2
+        dup2
+        rstore 4
+
+        rload 4
 
         rload_0
         getfield Main:Vec2:x:int
 
+        rload 2
+        getfield Main:Vec2:x:int
+
+        add
+        setfield Main:Vec2:x:int
+
+        rload 4
+
         rload_0
+        getfield Main:Vec2:y:int
+
+        rload 2
+        getfield Main:Vec2:y:int
+
+        add
+        setfield Main:Vec2:y:int
+
+        rload 4
+        rreturn
+    }
+}
+
+public void main() {
+    Code {
+
+
+        ipush 2
+        rnewarray Main:Vec2
+
+        rstore 0
+
+        rload_0
+        const_0
+
+        new Main:Vec2
+        dup2
+        ipush 105
+        dup
+        call Main:init:void(Main:Vec2, int, int)
+
+        rastore
+
+        rload_0
+        const_1
+
+        new Main:Vec2
+        dup2
+        ipush 105
+        dup
+        call Main:init:void(Main:Vec2, int, int)
+
+        rastore
+
+        rload_0
+        const_0
+        raload
+
+        rload_0
+        const_1
+        raload
+
+        call Main:_add:Main:Vec2(Main:Vec2, Main:Vec2)
+
+        rstore 2
+
+        rload 2
+        getfield Main:Vec2:x:int
+
+        rload 2
         getfield Main:Vec2:y:int
 
         add

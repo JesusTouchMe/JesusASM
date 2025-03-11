@@ -62,7 +62,27 @@ namespace JesusASM {
         descriptor += qualifiedName;
         descriptor += ";";
 
-        types.push_back(std::make_unique<Type>(qualifiedName, descriptor));
+        types.push_back(std::make_unique<Type>(std::move(qualifiedName), std::move(descriptor)));
+
+        return types.back().get();
+    }
+
+    Type* Type::GetArrayType(Type* baseType) {
+        std::string name(baseType->mName);
+        name += "[]";
+
+        auto it = std::find_if(types.begin(), types.end(), [&name](auto& type) {
+            return type->getName() == name;
+        });
+
+        if (it != types.end()) {
+            return it->get();
+        }
+
+        std::string descriptor = "[";
+        descriptor += baseType->mDescriptor;
+
+        types.push_back(std::make_unique<Type>(std::move(name), std::move(descriptor)));
 
         return types.back().get();
     }

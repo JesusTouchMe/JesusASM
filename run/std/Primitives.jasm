@@ -1,0 +1,9 @@
+public final class String {
+    char[] data;
+}
+
+public void init(Primitives:String) {
+    Code {
+
+    }
+}

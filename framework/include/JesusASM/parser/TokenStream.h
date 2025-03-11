@@ -27,6 +27,7 @@ namespace JesusASM::parser {
                 std::cout << std::format("{}:{}:{} error: Expected '{}', found '{}'\n",
                                          current().getStartLocation().file, current().getStartLocation().line,
                                          current().getStartLocation().col, temp.getName(), current().getText());
+                std::exit(1);
             }
         }
     };

@@ -236,28 +236,39 @@ namespace JesusASM::parser {
     }
 
     Type* Parser::parseType() {
+        Type* type;
         if (current().getTokenType() == lexer::TokenType::Type) {
-            return Type::GetBuiltinType(consume().getText());
-        }
+            type = Type::GetBuiltinType(consume().getText());
+        } else {
+            std::string moduleName(consume().getText());
 
-        std::string moduleName(consume().getText());
+            while (current().getTokenType() != lexer::TokenType::Colon) {
+                expectToken(lexer::TokenType::Slash);
+                consume();
 
-        while (current().getTokenType() != lexer::TokenType::Colon) {
-            expectToken(lexer::TokenType::Slash);
-            consume();
+                expectToken(lexer::TokenType::Identifier);
+
+                moduleName += '/';
+                moduleName += consume().getText();
+            }
+
+            consume(); // :
 
             expectToken(lexer::TokenType::Identifier);
+            std::string className(consume().getText());
 
-            moduleName += '/';
-            moduleName += consume().getText();
+            type = Type::GetClassType(moduleName, className);
         }
 
-        consume(); // :
+        while (current().getTokenType() == lexer::TokenType::LeftBracket) {
+            consume();
+            expectToken(lexer::TokenType::RightBracket);
+            consume();
 
-        expectToken(lexer::TokenType::Identifier);
-        std::string className(consume().getText());
+            type = Type::GetArrayType(type);
+        }
 
-        return Type::GetClassType(moduleName, className);
+        return type;
     }
 
     std::unique_ptr<tree::ClassNode> Parser::parseClass(const std::vector<lexer::TokenType>& classModifiers) {

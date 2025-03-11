@@ -1,1 +1,3 @@
 public native void exit(int);
+
+public native void loadLibrary(Primitives:String);

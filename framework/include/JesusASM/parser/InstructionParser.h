@@ -144,6 +144,7 @@ namespace JesusASM::parser {
 
                 if (mTokens.current().getTokenType() != lexer::TokenType::RightParen) {
                     mTokens.expect(lexer::TokenType::Comma);
+                    mTokens.consume();
                 }
             }
             mTokens.consume();
