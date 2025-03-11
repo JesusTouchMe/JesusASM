@@ -104,6 +104,16 @@ namespace moduleweb {
         return *this;
     }
 
+    InsnList& InsnList::ldcInsn(std::string_view value) {
+        std::string tmp(value);
+        return ldcInsn(tmp);
+    }
+
+    InsnList& InsnList::ldcInsn(std::string& value) {
+        moduleweb_insn_list_ldc_str(&mList, value.c_str());
+        return *this;
+    }
+
     InsnList& InsnList::varInsn(Opcode opcode, u16 local) {
         moduleweb_insn_list_var(&mList, opcode, local);
         return *this;

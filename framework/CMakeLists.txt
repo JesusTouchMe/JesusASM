@@ -42,6 +42,7 @@ set(SOURCES
         src/type/Type.cpp
         src/parser/ExpressionParser.cpp
         src/parser/Parser.cpp
+    src/tree/instructions/LdcInsnNode.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h
@@ -75,6 +76,7 @@ set(HEADERS
         include/JesusASM/type/Type.h
         include/JesusASM/parser/ExpressionParser.h
         include/JesusASM/parser/TokenStream.h
+    include/JesusASM/tree/instructions/LdcInsnNode.h
 )
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})

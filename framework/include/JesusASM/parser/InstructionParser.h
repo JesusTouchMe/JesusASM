@@ -19,6 +19,7 @@
 #include "JesusASM/tree/instructions/InsnNode.h"
 #include "JesusASM/tree/instructions/IntInsnNode.h"
 #include "JesusASM/tree/instructions/JumpInsnNode.h"
+#include "JesusASM/tree/instructions/LdcInsnNode.h"
 #include "JesusASM/tree/instructions/VarInsnNode.h"
 
 #include "JesusASM/type/Type.h"
@@ -77,6 +78,11 @@ namespace JesusASM::parser {
                 u16 index = static_cast<u16>(number);
 
                 return std::make_unique<Insn>(opcode, index);
+            } else if constexpr (std::derived_from<Insn, tree::LdcInsnNode>) {
+                mTokens.expect(lexer::TokenType::StringLiteral); // for now this is string only
+                std::string value(mTokens.consume().getText());
+
+                return std::make_unique<Insn>(std::move(value));
             } else {
                 static_assert(false, "Unsupported Insn type");
             }

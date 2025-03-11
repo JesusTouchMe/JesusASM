@@ -176,6 +176,8 @@ namespace JesusASM::parser {
                 { "lreturn",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LRETURN>(instructions, mLabelList).parse(mTokenStream); } },
                 { "hreturn",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::HRETURN>(instructions, mLabelList).parse(mTokenStream); } },
                 { "rreturn",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::RRETURN>(instructions, mLabelList).parse(mTokenStream); } },
+
+                { "ldc",            [this](auto& instructions) { return InstructionParser<tree::LdcInsnNode, Opcodes::LDC>(instructions, mLabelList).parse(mTokenStream); } },
         };
     }
 

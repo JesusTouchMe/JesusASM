@@ -19,6 +19,7 @@ namespace JesusASM::tree {
         INSN,
         CALL,
         LABEL,
+        LDC,
         JUMP,
         CLASS,
         FIELD,
