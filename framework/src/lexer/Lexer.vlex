@@ -10,6 +10,7 @@ tokens {
     [
     ]
     :
+    ::
     ;
     ,
     #
@@ -27,6 +28,7 @@ tokens {
     handle Type
     void Type
 
+    attribute
     class
     extends
 

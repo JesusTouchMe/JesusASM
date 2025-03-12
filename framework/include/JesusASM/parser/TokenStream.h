@@ -7,9 +7,11 @@
 
 #include "JesusASM/lexer/Token.h"
 
+#include <concepts>
 #include <format>
 #include <iostream>
 #include <vector>
+
 namespace JesusASM::parser {
     struct TokenStream {
         std::vector<lexer::Token>* tokens;
@@ -29,6 +31,32 @@ namespace JesusASM::parser {
                                          current().getStartLocation().col, temp.getName(), current().getText());
                 std::exit(1);
             }
+        }
+
+        constexpr void expectAny(lexer::TokenType first, auto... rest) {
+            if constexpr (sizeof...(rest) == 0) {
+                if (current().getTokenType() == first)
+                    return;
+            } else {
+                if (((current().getTokenType() == first) || ... || (current().getTokenType() == rest)))
+                    return;
+            }
+
+            std::string tokensString;
+            auto appendToken = [&](lexer::TokenType type) {
+                lexer::Token temp("", type, lexer::SourceLocation(), lexer::SourceLocation());
+                tokensString += std::format("'{}', ", temp.getName());
+            };
+
+            appendToken(first);
+            (appendToken(rest), ...);
+
+            tokensString = tokensString.substr(0, tokensString.size() - 2);
+
+            std::cout << std::format("{}:{}:{} error: Expected either {}, found '{}'\n",
+                                     current().getStartLocation().file, current().getStartLocation().line,
+                                     current().getStartLocation().col, tokensString, current().getText());
+            std::exit(1);
         }
     };
 }

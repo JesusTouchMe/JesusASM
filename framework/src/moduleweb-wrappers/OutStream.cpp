@@ -81,6 +81,21 @@ namespace moduleweb {
         moduleweb_outstream_uninit_buffer(&mStream);
     }
 
+    const void* ExpandingMemoryOutStream::getContentBuffer(bool copy) const {
+        if (copy) {
+            u8* buffer = new u8[getContentSize()];
+            std::memcpy(buffer, mBuffer, getContentSize());
+
+            return buffer;
+        } else {
+            return mBuffer;
+        }
+    }
+
+    u64 ExpandingMemoryOutStream::getContentSize() const {
+        return mStream.memory.pos;
+    }
+
     void ExpandingMemoryOutStream::flush() {
         errorCheck(moduleweb_outstream_flush(&mStream));
     }

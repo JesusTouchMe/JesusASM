@@ -29,8 +29,7 @@ set(SOURCES
     src/tree/ClassNode.cpp
     src/tree/FunctionNode.cpp
     src/tree/ModuleNode.cpp
-    src/Attribute.cpp
-    src/tree/InsnList.cpp
+        src/tree/InsnList.cpp
         src/tree/instructions/InsnNode.cpp
         src/tree/instructions/CallInsnNode.cpp
         src/tree/instructions/IntInsnNode.cpp
@@ -43,6 +42,7 @@ set(SOURCES
         src/parser/ExpressionParser.cpp
         src/parser/Parser.cpp
     src/tree/instructions/LdcInsnNode.cpp
+        src/Attributes.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h
@@ -77,6 +77,7 @@ set(HEADERS
         include/JesusASM/parser/ExpressionParser.h
         include/JesusASM/parser/TokenStream.h
     include/JesusASM/tree/instructions/LdcInsnNode.h
+        include/JesusASM/Attributes.h
 )
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})

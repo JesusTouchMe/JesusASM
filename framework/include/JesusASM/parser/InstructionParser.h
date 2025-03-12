@@ -94,19 +94,39 @@ namespace JesusASM::parser {
         TokenStream mTokens;
 
         Type* parseType() {
+            Type* type;
             if (mTokens.current().getTokenType() == lexer::TokenType::Type) {
-                return Type::GetBuiltinType(mTokens.consume().getText());
+                type = Type::GetBuiltinType(mTokens.consume().getText());
+            } else {
+                std::string moduleName(mTokens.consume().getText());
+
+                while (mTokens.current().getTokenType() != lexer::TokenType::Colon) {
+                    mTokens.expect(lexer::TokenType::Slash);
+                    mTokens.consume();
+
+                    mTokens.expect(lexer::TokenType::Identifier);
+
+                    moduleName += '/';
+                    moduleName += mTokens.consume().getText();
+                }
+
+                mTokens.consume(); // :
+
+                mTokens.expect(lexer::TokenType::Identifier);
+                std::string className(mTokens.consume().getText());
+
+                type = Type::GetClassType(moduleName, className);
             }
 
-            std::string moduleName = parseModuleName();
+            while (mTokens.current().getTokenType() == lexer::TokenType::LeftBracket) {
+                mTokens.consume();
+                mTokens.expect(lexer::TokenType::RightBracket);
+                mTokens.consume();
 
-            mTokens.expect(lexer::TokenType::Colon);
-            mTokens.consume();
+                type = Type::GetArrayType(type);
+            }
 
-            mTokens.expect(lexer::TokenType::Identifier);
-            std::string className(mTokens.consume().getText());
-
-            return Type::GetClassType(moduleName, className);
+            return type;
         }
 
         std::string parseModuleName() {
@@ -131,8 +151,29 @@ namespace JesusASM::parser {
 
             mTokens.expect(lexer::TokenType::Colon);
             mTokens.consume();
+
+            Type* implicitArgument = nullptr;
+
+            target.name = "";
+
+            if (mTokens.peek(1).getTokenType() == lexer::TokenType::DoubleColon) {
+                mTokens.expect(lexer::TokenType::Identifier);
+                std::string_view className = mTokens.consume().getText();
+                target.name += className;
+                target.name += "::";
+
+                implicitArgument = Type::GetClassType(target.module, className);
+
+                mTokens.consume(); // ::
+            }
+
+            if (mTokens.current().getTokenType() == lexer::TokenType::Hash) {
+                target.name += "#";
+                mTokens.consume();
+            }
+
             mTokens.expect(lexer::TokenType::Identifier);
-            target.name = mTokens.consume().getText();
+            target.name += mTokens.consume().getText();
 
             mTokens.expect(lexer::TokenType::Colon);
             mTokens.consume();
@@ -142,6 +183,10 @@ namespace JesusASM::parser {
 
             mTokens.expect(lexer::TokenType::LeftParen);
             mTokens.consume();
+
+            if (implicitArgument != nullptr) {
+                descriptor += implicitArgument->getDescriptor();
+            }
 
             while (mTokens.current().getTokenType() != lexer::TokenType::RightParen) {
                 Type* arg = parseType();

@@ -17,7 +17,7 @@ namespace JesusASM::tree {
         std::string name;
         Name superClass;
 
-        std::vector<std::unique_ptr<Attribute>> attributes;
+        std::vector<std::unique_ptr<IAttribute>> attributes;
         std::vector<std::unique_ptr<FieldNode>> fields;
 
         ClassNode() = default;

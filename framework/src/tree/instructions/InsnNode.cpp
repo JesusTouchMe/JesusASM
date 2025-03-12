@@ -122,6 +122,10 @@ namespace JesusASM::tree {
     }
 
     void InsnNode::emit(moduleweb::InsnList& list) {
+        if (mOpcode == Opcodes::RLOAD_0) {
+            list.setLocalIndex(1); // 0 and 1 at the same time
+        }
+
         list.insn(mOpcode);
     }
 }

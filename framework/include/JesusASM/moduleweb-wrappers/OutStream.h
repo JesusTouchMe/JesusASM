@@ -74,6 +74,9 @@ namespace moduleweb {
         ExpandingMemoryOutStream();
         ~ExpandingMemoryOutStream() override;
 
+        [[nodiscard]] const void* getContentBuffer(bool copy = false) const;
+        [[nodiscard]] u64 getContentSize() const;
+
         void flush() override;
 
         void writeU8(u8 value) override;

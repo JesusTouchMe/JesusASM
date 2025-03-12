@@ -1,5 +1,7 @@
 // Copyright 2025 JesusTouchMe
 
+#include "JesusASM/Attributes.h"
+
 #include "JesusASM/parser/Parser.h"
 
 #include <filesystem>
@@ -189,7 +191,7 @@ namespace JesusASM::parser {
         module->name = std::filesystem::path(mFileName).replace_extension().string();
 
         // (technically) nonstandard attributes used to help debugging and reverse engineering tools determine how a module was compiled
-        module->attributes.push_back(std::make_unique<Attribute>("CompilerID", "JesusASM 1.0"));
+        module->attributes.push_back(std::make_unique<Attribute<std::string_view>>("CompilerID", "JesusASM 1.0"));
 
         while (current().getTokenType() != lexer::TokenType::EndOfFile) {
             populateModule();
@@ -222,6 +224,15 @@ namespace JesusASM::parser {
         lexer::Token token = current();
 
         switch (token.getTokenType()) {
+            case lexer::TokenType::AttributeKeyword:
+                if (!modifiers.empty()) {
+                    std::cout << "weird attribute\n";
+                    std::exit(1);
+                }
+
+                mModule->attributes.push_back(parseAttribute());
+                break;
+
             case lexer::TokenType::ClassKeyword:
                 mModule->classes.push_back(parseClass(modifiers));
                 break;
@@ -273,12 +284,41 @@ namespace JesusASM::parser {
         return type;
     }
 
+    std::unique_ptr<IAttribute> Parser::parseAttribute() {
+        consume(); // attribute
+
+        mTokenStream.expectAny(lexer::TokenType::Identifier, lexer::TokenType::StringLiteral);
+        std::string name(consume().getText());
+
+        expectToken(lexer::TokenType::LeftBrace);
+        consume();
+
+        if (name == "RequiredPlugins") {
+            RequiredPluginsAttribute attribute;
+
+            while (current().getTokenType() != lexer::TokenType::RightBrace) {
+                expectToken(lexer::TokenType::StringLiteral);
+                std::string value(consume().getText());
+
+                if (current().getTokenType() != lexer::TokenType::RightBrace) {
+                    expectToken(lexer::TokenType::Comma);
+                    consume();
+                }
+
+                attribute.value.push_back(std::move(value));
+            }
+            consume();
+
+            return std::make_unique<Attribute<RequiredPluginsAttribute>>(attribute);
+        }
+    }
+
     std::unique_ptr<tree::ClassNode> Parser::parseClass(const std::vector<lexer::TokenType>& classModifiers) {
         consume(); // class
 
         auto clas = std::make_unique<tree::ClassNode>();
 
-        clas->attributes.push_back(std::make_unique<Attribute>("PreSortedFields", false));
+        clas->attributes.push_back(std::make_unique<Attribute<bool>>("PreSortedFields", false));
 
         for (auto modifier : classModifiers) {
             auto it = mClassModifiers.find(modifier);
@@ -349,11 +389,23 @@ namespace JesusASM::parser {
         }
 
         Type* returnType = parseType();
+        Type* implicitArgument = nullptr;
 
         std::string name;
 
+        if (peek(1).getTokenType() == lexer::TokenType::DoubleColon) {
+            expectToken(lexer::TokenType::Identifier);
+            std::string_view className = consume().getText();
+            name += className;
+            name += "::";
+
+            implicitArgument = Type::GetClassType(mModule->name, className);
+
+            consume(); // ::
+        }
+
         if (current().getTokenType() == lexer::TokenType::Hash) {
-            name = "#";
+            name += "#";
             consume();
         }
 
@@ -366,6 +418,11 @@ namespace JesusASM::parser {
         consume();
 
         std::vector<Type*> args;
+
+        if (implicitArgument != nullptr) {
+            args.push_back(implicitArgument);
+        }
+
         while (current().getTokenType() != lexer::TokenType::RightParen) {
             Type* type = parseType();
             args.push_back(type);
@@ -386,7 +443,7 @@ namespace JesusASM::parser {
             return std::move(function);
         }
 
-        function->attributes.push_back(std::make_unique<Attribute>("CompilerOptimized", false));
+        function->attributes.push_back(std::make_unique<Attribute<bool>>("CompilerOptimized", false));
 
         //TODO: support simple function definitions
 
@@ -402,8 +459,11 @@ namespace JesusASM::parser {
     }
 
     void Parser::parseFunctionBody(tree::FunctionNode* function) {
-        expectToken(lexer::TokenType::Identifier);
+        if (current().getTokenType() == lexer::TokenType::AttributeKeyword) {
+            consume(); // even though function bodies are implicitly attributes, there's no harm in explicitly saying it's one
+        }
 
+        expectToken(lexer::TokenType::Identifier);
         std::string bodyName(consume().getText());
 
         if (bodyName == "Code") {
@@ -439,7 +499,7 @@ namespace JesusASM::parser {
             }
             consume();
 
-            function->attributes.push_back(std::make_unique<Attribute>(bodyName, bytes.data(), bytes.size()));
+            function->attributes.push_back(std::make_unique<Attribute<u8*>>(bodyName, bytes.data(), bytes.size()));
         }
     }
 }

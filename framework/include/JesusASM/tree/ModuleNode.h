@@ -18,7 +18,7 @@ namespace JesusASM::tree {
         u16 version;
         std::string name;
 
-        std::vector<std::unique_ptr<Attribute>> attributes;
+        std::vector<std::unique_ptr<IAttribute>> attributes;
         std::vector<std::unique_ptr<ClassNode>> classes;
         std::vector<std::unique_ptr<FunctionNode>> functions;
 

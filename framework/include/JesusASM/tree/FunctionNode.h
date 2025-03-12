@@ -20,7 +20,7 @@ namespace JesusASM::tree {
 
         InsnList instructions;
 
-        std::vector<std::unique_ptr<Attribute>> attributes;
+        std::vector<std::unique_ptr<IAttribute>> attributes;
 
         FunctionNode() = default;
         FunctionNode(u16 modifiers, std::string_view name, std::string_view descriptor);

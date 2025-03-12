@@ -18,7 +18,7 @@ namespace JesusASM::tree {
         std::string name;
         std::string descriptor;
 
-        std::vector<std::unique_ptr<Attribute>> attributes;
+        std::vector<std::unique_ptr<IAttribute>> attributes;
 
         FieldNode(u16 modifiers, std::string_view name, std::string_view descriptor);
         FieldNode(u16 modifiers, std::string&& name, std::string&& descriptor);

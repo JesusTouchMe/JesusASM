@@ -37,6 +37,9 @@ namespace JesusASM::tree {
         list.setLocalIndex(mIndex);
 
         switch (mOpcode) {
+            case Opcodes::LLOAD:
+            case Opcodes::HLOAD:
+            case Opcodes::RLOAD:
             case Opcodes::LSTORE:
             case Opcodes::HSTORE:
             case Opcodes::RSTORE:

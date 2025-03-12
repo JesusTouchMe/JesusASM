@@ -51,6 +51,7 @@ namespace JesusASM::parser {
 
         Type* parseType();
 
+        std::unique_ptr<IAttribute> parseAttribute();
         std::unique_ptr<tree::ClassNode> parseClass(const std::vector<lexer::TokenType>& modifiers);
         std::unique_ptr<tree::FunctionNode> parseFunction(const std::vector<lexer::TokenType>& modifiers);
 

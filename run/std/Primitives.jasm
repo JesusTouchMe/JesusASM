@@ -1,3 +1,14 @@
 public final class String {
-    char[] data;
+    private char[] data;
+}
+
+public void String::#Init(char[]) {
+    Code {
+        rload_0
+        rload 2
+
+        setfield std/Primitives:String:data:char[]
+
+        return
+    }
 }
