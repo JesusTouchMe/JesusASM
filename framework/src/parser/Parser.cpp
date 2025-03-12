@@ -350,8 +350,17 @@ namespace JesusASM::parser {
 
         Type* returnType = parseType();
 
+        std::string name;
+
+        if (current().getTokenType() == lexer::TokenType::Hash) {
+            name = "#";
+            consume();
+        }
+
         expectToken(lexer::TokenType::Identifier);
-        function->name = consume().getText();
+        name += consume().getText();
+
+        function->name = std::move(name);
 
         expectToken(lexer::TokenType::LeftParen);
         consume();

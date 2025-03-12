@@ -12,6 +12,7 @@ tokens {
     :
     ;
     ,
+    #
 
     _identifier
     _integer_literal

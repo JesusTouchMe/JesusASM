@@ -2,11 +2,16 @@
 
 public native void print(int);
 
-public void main() {
+public void #LinkInit() {
     Code {
         ldc "Main"
         call vm/System:loadPlugin:void(std/Primitives:String)
+        return
+    }
+}
 
+public void main() {
+    Code {
         ipush 69
 
         call Main:print:void(int)
