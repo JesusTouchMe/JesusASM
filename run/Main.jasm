@@ -15,17 +15,6 @@ public void Value::#Init(int) {
     }
 }
 
-public void Value::print() {
-    Code {
-        rload_0
-        getfield Main:Value:x:int
-
-        call Main:print:void(int)
-
-        return
-    }
-}
-
 public void main() {
     Code {
         ldc "Main"
@@ -36,8 +25,8 @@ public void main() {
         ipush 69
         call Main:Value::#Init:void(int)
 
-        dup2
-        call Main:Value::print:void()
+        getfield Main:Value:x:int
+        call Main:print:void(int)
 
         return
     }

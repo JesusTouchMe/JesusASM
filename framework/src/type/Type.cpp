@@ -2,6 +2,7 @@
 
 #include "JesusASM/type/Type.h"
 
+#include <algorithm>
 #include <memory>
 #include <vector>
 

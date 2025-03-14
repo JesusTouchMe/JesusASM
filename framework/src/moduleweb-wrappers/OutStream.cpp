@@ -2,6 +2,7 @@
 
 #include "JesusASM/moduleweb-wrappers/OutStream.h"
 
+#include <cstring>
 
 namespace moduleweb {
     FileOutStream::FileOutStream(std::string_view name)

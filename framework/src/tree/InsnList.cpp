@@ -230,7 +230,7 @@ namespace JesusASM::tree {
 
             for (auto pred : label->mPredecessors) {
                 if (stackDepthMap.contains(pred)) {
-                    newDepth = max(newDepth, stackDepthMap[pred]);
+                    newDepth = std::max(newDepth, stackDepthMap[pred]);
                 }
             }
 
