@@ -3,10 +3,9 @@ cmake_minimum_required(VERSION 3.26)
 include(FetchContent)
 
 FetchContent_Declare(
-    moduleweb
+    JesusVM
     GIT_REPOSITORY https://github.com/JesusTouchMe/JesusVM.git
     GIT_TAG master
-    SOURCE_SUBDIR moduleweb
 )
 
 FetchContent_Declare(
@@ -15,7 +14,7 @@ FetchContent_Declare(
         GIT_TAG master
 )
 
-FetchContent_MakeAvailable(moduleweb)
+FetchContent_MakeAvailable(JesusVM)
 FetchContent_MakeAvailable(vlex)
 
 set(SOURCES
