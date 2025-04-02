@@ -168,21 +168,28 @@ namespace JesusASM::tree {
     void InsnList::remove(AbstractInsnNode* insn) {
         mSize--;
 
-        if (insn->mPrev == nullptr) {
-            mFirst = std::move(insn->mNext);
+        if (insn == mFirst.get()) {
+            mFirst = std::move(mFirst->mNext);
             if (mFirst != nullptr) {
                 mFirst->mPrev = nullptr;
+            } else {
+                mLast = nullptr;
             }
-        } else {
-            insn->mPrev->mNext = std::move(insn->mNext);
-            if (insn->mPrev->mNext != nullptr) {
-                insn->mPrev->mNext->mPrev = insn->mPrev;
-            }
+
+            return;
         }
 
-        if (insn->mNext == nullptr) {
-            mLast = insn->mPrev;
-        } else {
+        if (insn == mLast) {
+            mLast = mLast->mPrev;
+            mLast->mNext = nullptr;
+            return;
+        }
+
+        if (insn->mPrev != nullptr) {
+            insn->mPrev->mNext = std::move(insn->mNext);
+        }
+
+        if (insn->mNext != nullptr) {
             insn->mNext->mPrev = insn->mPrev;
         }
     }
