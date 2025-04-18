@@ -8,36 +8,19 @@ namespace JesusASM::tree {
         , mSize(size)
         , mValue(value) {}
 
-    i32 IntInsnNode::getStackPushes() const {
-        if (mOpcode == Opcodes::NEWARRAY) {
-            return 2;
-        }
-
-        if (mSize == OperandSize::LONG) return 2;
-        else return 1;
-    }
-
-    i32 IntInsnNode::getStackPops() const {
-        if (mOpcode == Opcodes::NEWARRAY) {
-            return 1;
-        }
-
-        return 0;
-    }
-
     void IntInsnNode::emit(moduleweb::InsnList& list) {
         switch (mSize) {
             case OperandSize::BYTE:
-                list.byteInsn(mOpcode, static_cast<i8>(mValue));
+                list.byteInsn(mOpcode.opcode, static_cast<i8>(mValue));
                 break;
             case OperandSize::SHORT:
-                list.shortInsn(mOpcode, static_cast<i16>(mValue));
+                list.shortInsn(mOpcode.opcode, static_cast<i16>(mValue));
                 break;
             case OperandSize::INT:
-                list.intInsn(mOpcode, static_cast<i32>(mValue));
+                list.intInsn(mOpcode.opcode, static_cast<i32>(mValue));
                 break;
             case OperandSize::LONG:
-                list.longInsn(mOpcode, mValue);
+                list.longInsn(mOpcode.opcode, mValue);
                 break;
         }
     }

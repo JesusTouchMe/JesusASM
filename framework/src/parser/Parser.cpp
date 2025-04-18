@@ -471,16 +471,30 @@ namespace JesusASM::parser {
             consume();
 
             while (current().getTokenType() != lexer::TokenType::RightBrace) {
-                expectToken(lexer::TokenType::Instruction);
-                std::string_view instruction = consume().getText();
+                if (current().getTokenType() == lexer::TokenType::Identifier) {
+                    std::string name(consume().getText());
 
-                auto it = mInstructionParsers.find(instruction);
-                if (it == mInstructionParsers.end()) {
-                    std::cout << "Unable to parse instruction: " << instruction << "\n";
-                    std::exit(1);
+                    expectToken(lexer::TokenType::Colon);
+                    consume();
+
+                    auto label = mLabelList.removeLabel(name);
+                    if (label != nullptr) {
+                        function->instructions.add(std::move(label));
+                    } else {
+                        function->instructions.add(std::make_unique<tree::LabelNode>(name));
+                    }
+                } else {
+                    expectToken(lexer::TokenType::Instruction);
+                    std::string_view instruction = consume().getText();
+
+                    auto it = mInstructionParsers.find(instruction);
+                    if (it == mInstructionParsers.end()) {
+                        std::cout << "Unable to parse instruction: " << instruction << "\n";
+                        std::exit(1);
+                    }
+
+                    function->instructions.add(it->second(function->instructions));
                 }
-
-                function->instructions.add(it->second(function->instructions));
             }
             consume();
         } else {

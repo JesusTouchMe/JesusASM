@@ -23,8 +23,8 @@ namespace JesusASM::tree {
             , mName(std::move(name))
             , mDescriptor(std::move(descriptor)) {}
 
-    i32 FieldInsnNode::getStackPushes() const {
-        if (mOpcode == Opcodes::GETFIELD) {
+    int FieldInsnNode::getStackPushes() const {
+        if (mOpcode.opcode == Opcodes::GETFIELD) {
             char c = mDescriptor[0];
             switch (c) {
                 case 'B':
@@ -49,10 +49,10 @@ namespace JesusASM::tree {
         return 0;
     }
 
-    i32 FieldInsnNode::getStackPops() const {
+    int FieldInsnNode::getStackPops() const {
         i32 pops = 2; // the object
 
-        if (mOpcode == Opcodes::SETFIELD) {
+        if (mOpcode.opcode == Opcodes::SETFIELD) {
             char c = mDescriptor[0];
             switch (c) {
                 case 'B':
@@ -80,6 +80,6 @@ namespace JesusASM::tree {
     }
 
     void FieldInsnNode::emit(moduleweb::InsnList& list) {
-        list.fieldInsn(mOpcode, mOwnerModule, mOwner, mName, mDescriptor);
+        list.fieldInsn(mOpcode.opcode, mOwnerModule, mOwner, mName, mDescriptor);
     }
 }

@@ -32,27 +32,42 @@ namespace JesusASM::tree {
     public:
         virtual ~AbstractInsnNode() = default;
 
-        [[nodiscard]] Opcode getOpcode() const { return mOpcode; }
+        [[nodiscard]] const EnumOpcodesMember& getOpcode() const { return mOpcode; }
         [[nodiscard]] InsnType getType() const { return mType; };
 
         [[nodiscard]] AbstractInsnNode* getNext() const { return mNext.get(); }
         [[nodiscard]] AbstractInsnNode* getPrev() const { return mPrev; }
 
-        [[nodiscard]] virtual i32 getStackPushes() const { return 0; }
-        [[nodiscard]] virtual i32 getStackPops() const { return 0; }
+        [[nodiscard]] virtual int getStackPushes() const { return mOpcode.stackPushes; }
+        [[nodiscard]] virtual int getStackPops() const { return mOpcode.stackPops; }
+
+        [[nodiscard]] bool isJump() const {
+            if (mType == InsnType::JUMP) return true;
+
+            switch (mOpcode.opcode) {
+                case Opcodes::RETURN:
+                case Opcodes::IRETURN:
+                case Opcodes::LRETURN:
+                case Opcodes::HRETURN:
+                case Opcodes::RRETURN:
+                    return true;
+            }
+
+            return false;
+        }
 
         virtual void emit(moduleweb::InsnList& list) = 0;
         virtual void preEmit(moduleweb::InsnList& list) {}
 
     protected:
         InsnType mType;
-        Opcode mOpcode;
+        const EnumOpcodesMember& mOpcode;
 
         LabelNode* mLabel = nullptr; // the label or "basic block" this node exists in
 
         explicit AbstractInsnNode(InsnType type, Opcode opcode)
             : mType(type)
-            , mOpcode(opcode) {}
+            , mOpcode(EnumOpcodes::Get(opcode)) {}
 
     private:
         std::unique_ptr<AbstractInsnNode> mNext;

@@ -16,27 +16,7 @@ namespace JesusASM::tree {
         , mModule(std::move(module))
         , mName(std::move(name)) {}
 
-    i32 ClassInsnNode::getStackPushes() const {
-        if (mOpcode == Opcodes::ISINSTANCE) {
-            return 1; // true or false
-        }
-
-        return 2;
-    }
-
-    i32 ClassInsnNode::getStackPops() const {
-        if (mOpcode == Opcodes::ISINSTANCE) {
-            return 2; // the checked object
-        }
-
-        if (mOpcode == Opcodes::RNEWARRAY || mOpcode == Opcodes::NEWARRAY) {
-            return 1; // length
-        }
-
-        return 0;
-    }
-
     void ClassInsnNode::emit(moduleweb::InsnList& list) {
-        list.classInsn(mOpcode, mModule, mName);
+        list.classInsn(mOpcode.opcode, mModule, mName);
     }
 }

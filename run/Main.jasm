@@ -1,33 +1,10 @@
-class Value {
-    int x;
-}
-
-public native void print(int);
-
-public void Value::#Init(int) {
-    Code {
-        rload_0
-        iload 2
-
-        setfield Main:Value:x:int
-
-        return
-    }
-}
-
 public void main() {
     Code {
         ldc "Main"
         call vm/System:loadPlugin:void(std/Primitives:String)
 
-        new Main:Value
-        dup2
-        ipush 69
-        call Main:Value::#Init:void(int)
-
-        getfield Main:Value:x:int
-        call Main:print:void(int)
+        call Example:main:void()
 
         return
-    }
+   }
 }

@@ -42,6 +42,7 @@ set(SOURCES
         src/parser/Parser.cpp
     src/tree/instructions/LdcInsnNode.cpp
         src/Attributes.cpp
+    src/Opcodes.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h

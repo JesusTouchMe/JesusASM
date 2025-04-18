@@ -14,10 +14,6 @@ namespace JesusASM::tree {
         ClassInsnNode(Opcode opcode, std::string_view module, std::string_view name);
         ClassInsnNode(Opcode opcode, std::string&& module, std::string&& name);
 
-        i32 getStackPushes() const override;
-
-        i32 getStackPops() const override;
-
         void emit(moduleweb::InsnList& list) override;
 
     private:

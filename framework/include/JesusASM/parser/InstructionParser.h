@@ -12,6 +12,7 @@
 #include "JesusASM/parser/TokenStream.h"
 
 #include "JesusASM/tree/AbstractInsnNode.h"
+#include "JesusASM/tree/InsnList.h"
 
 #include "JesusASM/tree/instructions/CallInsnNode.h"
 #include "JesusASM/tree/instructions/ClassInsnNode.h"

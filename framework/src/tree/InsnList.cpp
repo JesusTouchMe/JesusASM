@@ -28,6 +28,8 @@ namespace JesusASM::tree {
                 auto label = static_cast<LabelNode*>(i);
                 if (label->mName == name) return label;
             }
+
+            i = i->mNext.get();
         }
 
         return nullptr;
@@ -194,6 +196,24 @@ namespace JesusASM::tree {
         }
     }
 
+    std::unique_ptr<LabelNode> InsnList::removeLabel(std::string_view name) {
+        auto* i = &mFirst;
+        while (*i) {
+            if ((*i)->mType == InsnType::LABEL) {
+                auto label = static_cast<LabelNode*>(i->get());
+                if (label->mName == name) {
+                    label = static_cast<LabelNode*>(i->release());
+                    remove(label);
+                    return std::unique_ptr<LabelNode>(label);
+                }
+            }
+
+            i = &(*i)->mNext;
+        }
+
+        return nullptr;
+    }
+
     void InsnList::clear() {
         mSize = 0;
         mFirst = nullptr;
@@ -208,6 +228,8 @@ namespace JesusASM::tree {
         if (mFirst->getType() != InsnType::LABEL) {
             addFront(std::make_unique<LabelNode>());
         }
+
+        analyzeFallthroughLabels();
 
         AbstractInsnNode* node = mFirst.get();
         while (node != nullptr) {
@@ -255,7 +277,7 @@ namespace JesusASM::tree {
                 if (it->getType() == InsnType::JUMP) {
                     auto jump = static_cast<JumpInsnNode*>(it);
 
-                    if (jump->mOpcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
+                    if (jump->mOpcode.opcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
                         LabelNode* dest = jump->mDestination;
                         if (!stackDepthMap.contains(dest) || newDepth > stackDepthMap[dest]) {
                             stackDepthMap[dest] = newDepth;
@@ -295,6 +317,26 @@ namespace JesusASM::tree {
         while (node != nullptr) {
             node->emit(list);
             node = node->getNext();
+        }
+    }
+
+    void InsnList::analyzeFallthroughLabels() {
+        tree::LabelNode* prevLabel = nullptr;
+        tree::AbstractInsnNode* prevInsn = nullptr;
+
+        for (tree::AbstractInsnNode* it = mFirst.get(); it != nullptr; it = it->getNext()) {
+            if (it->getType() == InsnType::LABEL) {
+                auto currentLabel = static_cast<tree::LabelNode*>(it);
+
+                if (prevLabel != nullptr && prevInsn != nullptr && !prevInsn->isJump()) {
+                    prevLabel->addSuccessor(currentLabel);
+                    currentLabel->addPredecessor(prevLabel);
+                }
+
+                prevLabel = currentLabel;
+            } else {
+                prevInsn = it;
+            }
         }
     }
 }

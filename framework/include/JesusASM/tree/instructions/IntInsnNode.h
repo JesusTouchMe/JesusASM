@@ -19,10 +19,6 @@ namespace JesusASM::tree {
     public:
         IntInsnNode(Opcode opcode, OperandSize size, i64 value);
 
-        i32 getStackPushes() const override;
-
-        i32 getStackPops() const override;
-
         void emit(moduleweb::InsnList& list) override;
 
     private:

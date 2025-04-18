@@ -11,11 +11,11 @@ namespace JesusASM::tree {
         : AbstractInsnNode(InsnType::LDC, Opcodes::LDC)
         , mValue(std::move(value)) {}
 
-    i32 LdcInsnNode::getStackPushes() const {
+    int LdcInsnNode::getStackPushes() const {
         return 2;
     }
 
-    i32 LdcInsnNode::getStackPops() const {
+    int LdcInsnNode::getStackPops() const {
         return 0;
     }
 

@@ -11,8 +11,6 @@ namespace JesusASM::tree {
     public:
         JumpInsnNode(Opcode opcode, LabelNode* label);
 
-        i32 getStackPops() const override;
-
         void emit(moduleweb::InsnList& list) override;
         void preEmit(moduleweb::InsnList& list) override;
 

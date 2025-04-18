@@ -10,10 +10,6 @@ namespace JesusASM::tree {
     public:
         VarInsnNode(Opcode opcode, u16 index);
 
-        i32 getStackPushes() const override;
-
-        i32 getStackPops() const override;
-
         void emit(moduleweb::InsnList& list) override;
 
     private:

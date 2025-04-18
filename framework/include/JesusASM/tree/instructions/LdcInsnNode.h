@@ -13,9 +13,8 @@ namespace JesusASM::tree {
         LdcInsnNode(std::string_view value);
         LdcInsnNode(std::string&& value);
 
-        i32 getStackPushes() const override;
-
-        i32 getStackPops() const override;
+        int getStackPushes() const override;
+        int getStackPops() const override;
 
         void emit(moduleweb::InsnList& list) override;
 

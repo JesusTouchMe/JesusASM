@@ -98,6 +98,7 @@ namespace JesusASM::tree {
         void insertBefore(AbstractInsnNode* location, InsnList& list);
 
         void remove(AbstractInsnNode* insn);
+        std::unique_ptr<LabelNode> removeLabel(std::string_view name);
 
         void clear();
 
@@ -108,6 +109,8 @@ namespace JesusASM::tree {
         AbstractInsnNode* mLast = nullptr;
 
         std::size_t mSize = 0;
+
+        void analyzeFallthroughLabels();
     };
 }
 

@@ -17,7 +17,7 @@ namespace JesusASM::tree {
         , mName(std::move(name))
         , mDescriptor(std::move(descriptor)) {}
 
-    i32 CallInsnNode::getStackPushes() const {
+    int CallInsnNode::getStackPushes() const {
         auto pos = mDescriptor.rfind(')');
         if (pos == std::string_view::npos) {
             throw std::runtime_error("Bad descriptor");
@@ -47,35 +47,65 @@ namespace JesusASM::tree {
         }
     }
 
-    i32 CallInsnNode::getStackPops() const {
-        i32 arguments = 0;
-        bool parsingRef = false;
+    int CallInsnNode::getStackPops() const {
+        if (mDescriptor.front() != '(') {
+            throw std::runtime_error("bad descriptor");
+        }
 
-        std::string_view descriptor(mDescriptor);
-        descriptor.remove_prefix(1);
+        int arguments = 0;
 
-        for (char c : descriptor) { // TODO: support array type
-            if (c == ')') {
-                break;
-            }
+        size_t i = 1;
+        while (i < mDescriptor.size() && mDescriptor[i] != ')') {
+            char c = mDescriptor[i];
 
-            if (parsingRef) {
-                if (c == ';') {
-                    parsingRef = false;
-                    arguments += 2; // 2 values because 64 bits
+            switch (c) {
+                case 'B':
+                case 'S':
+                case 'I':
+                case 'C':
+                case 'Z':
+                case 'F':
+                    arguments += 1;
+                    i++;
+                    break;
+
+                case 'L':
+                case 'D':
+                    arguments += 2;
+                    i++;
+                    break;
+
+                case 'R': {
+                    size_t semicolon = mDescriptor.find(';', i);
+                    if (semicolon == std::string_view::npos) {
+                        throw std::invalid_argument("Unterminated object type in descriptor");
+                    }
+
+                    arguments += 2;
+                    i = semicolon + 1;
+
+                    break;
                 }
-                continue;
-            }
 
-            if (c == 'R') {
-                parsingRef = true;
-                continue;
-            }
+                case '[': {
+                    while (mDescriptor[i] == '[')
+                        i++;
 
-            if (c == 'L' || c == 'D' || c == 'H') {
-                arguments += 2;
-            } else {
-                arguments += 1;
+                    if (mDescriptor[i] == 'R') {
+                        size_t semicolon = mDescriptor.find(';', i);
+                        if (semicolon == std::string_view::npos)
+                            throw std::invalid_argument("Unterminated array object type in descriptor");
+                        i = semicolon + 1;
+                    } else {
+                        i++;
+                    }
+                    arguments += 2;
+
+                    break;
+                }
+
+                default:
+                    throw std::invalid_argument(std::string("Unexpected character in descriptor: ") + c);
             }
         }
 
@@ -83,6 +113,6 @@ namespace JesusASM::tree {
     }
 
     void CallInsnNode::emit(moduleweb::InsnList& list) {
-        list.callInsn(mOpcode, mModule, mName, mDescriptor);
+        list.callInsn(mOpcode.opcode, mModule, mName, mDescriptor);
     }
 }
