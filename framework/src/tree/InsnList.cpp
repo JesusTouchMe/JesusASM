@@ -187,12 +187,12 @@ namespace JesusASM::tree {
             return;
         }
 
-        if (insn->mPrev != nullptr) {
-            insn->mPrev->mNext = std::move(insn->mNext);
-        }
-
         if (insn->mNext != nullptr) {
             insn->mNext->mPrev = insn->mPrev;
+        }
+
+        if (insn->mPrev != nullptr) {
+            insn->mPrev->mNext = std::move(insn->mNext);
         }
     }
 
