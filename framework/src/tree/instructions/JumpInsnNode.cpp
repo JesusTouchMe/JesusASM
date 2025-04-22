@@ -2,6 +2,7 @@
 
 #include "JesusASM/tree/instructions/JumpInsnNode.h"
 
+#include <format>
 #include <iostream>
 
 namespace JesusASM::tree {
@@ -9,6 +10,10 @@ namespace JesusASM::tree {
     JumpInsnNode::JumpInsnNode(Opcode opcode, LabelNode* label)
         : AbstractInsnNode(InsnType::JUMP, opcode)
         , mDestination(label) {}
+
+    void JumpInsnNode::print(std::ostream& stream) const {
+        stream << std::format("{} {}", mOpcode.name, mDestination->getName());
+    }
 
     void JumpInsnNode::emit(moduleweb::InsnList& list) {
         list.jumpInsn(mOpcode.opcode, mDestination->getLabel(list));

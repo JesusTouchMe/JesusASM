@@ -2,6 +2,8 @@
 
 #include "JesusASM/tree/instructions/LabelNode.h"
 
+#include <format>
+
 namespace JesusASM::tree {
     LabelNode::LabelNode(std::string_view name)
         : AbstractInsnNode(InsnType::LABEL, Opcodes::NOP)
@@ -37,6 +39,10 @@ namespace JesusASM::tree {
 
     void LabelNode::emit(moduleweb::InsnList& list) {
         list.addLabel(getLabel(list));
+    }
+
+    void LabelNode::print(std::ostream& stream) const {
+        stream << std::format("{}:", mName);
     }
 
     void LabelNode::checkName() {

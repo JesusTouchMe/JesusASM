@@ -26,6 +26,8 @@ namespace JesusASM::tree {
         ModuleNode(u16 version, std::string_view name);
         ModuleNode(u16 version, std::string&& name);
 
+        void print(std::ostream& stream) const;
+
         void emit(moduleweb::ModuleBuilder& builder, moduleweb::ModuleInfo& info);
     };
 }

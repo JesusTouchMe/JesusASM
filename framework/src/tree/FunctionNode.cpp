@@ -2,6 +2,7 @@
 
 #include "JesusASM/tree/FunctionNode.h"
 
+#include <format>
 #include <stdexcept>
 
 namespace JesusASM::tree {
@@ -15,6 +16,12 @@ namespace JesusASM::tree {
         : modifiers(modifiers)
         , name(std::move(name))
         , descriptor(std::move(descriptor)) {}
+
+    void FunctionNode::print(std::ostream& stream) const {
+        stream << std::format("function {}:{} {{\n", name, descriptor);
+        instructions.print(stream);
+        stream << "}";
+    }
 
     void FunctionNode::emit(moduleweb::FunctionBuilder& builder) {
         if (name.empty() || descriptor.empty()) {

@@ -10,6 +10,8 @@ namespace JesusASM::tree {
     public:
         InsnNode(Opcode opcode);
 
+        void print(std::ostream& stream) const override;
+
         void emit(moduleweb::InsnList& list) override;
     };
 }

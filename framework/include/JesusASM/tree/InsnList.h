@@ -102,6 +102,8 @@ namespace JesusASM::tree {
 
         void clear();
 
+        void print(std::ostream& stream) const;
+
         void emit(moduleweb::InsnList& list);
 
     private:

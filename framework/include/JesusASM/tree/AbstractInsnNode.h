@@ -56,6 +56,8 @@ namespace JesusASM::tree {
             return false;
         }
 
+        virtual void print(std::ostream& stream) const = 0;
+
         virtual void emit(moduleweb::InsnList& list) = 0;
         virtual void preEmit(moduleweb::InsnList& list) {}
 

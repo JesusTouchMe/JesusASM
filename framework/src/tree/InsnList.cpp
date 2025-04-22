@@ -220,6 +220,18 @@ namespace JesusASM::tree {
         mLast = nullptr;
     }
 
+    void InsnList::print(std::ostream& stream) const {
+        AbstractInsnNode* node = mFirst.get();
+        while (node != nullptr) {
+            if (node->getType() == InsnType::LABEL) stream << "  ";
+            else stream << "    ";
+            node->print(stream);
+            stream << "\n";
+
+            node = node->getNext();
+        }
+    }
+
     void InsnList::emit(moduleweb::InsnList& list) {
         if (mSize == 0) return;
 

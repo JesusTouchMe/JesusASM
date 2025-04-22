@@ -23,6 +23,8 @@ namespace JesusASM::tree {
         FieldNode(u16 modifiers, std::string_view name, std::string_view descriptor);
         FieldNode(u16 modifiers, std::string&& name, std::string&& descriptor);
 
+        void print(std::ostream& stream) const;
+
         void emit(moduleweb::FieldBuilder& builder);
     };
 }

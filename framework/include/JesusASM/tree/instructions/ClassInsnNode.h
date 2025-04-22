@@ -14,6 +14,8 @@ namespace JesusASM::tree {
         ClassInsnNode(Opcode opcode, std::string_view module, std::string_view name);
         ClassInsnNode(Opcode opcode, std::string&& module, std::string&& name);
 
+        void print(std::ostream& stream) const override;
+
         void emit(moduleweb::InsnList& list) override;
 
     private:

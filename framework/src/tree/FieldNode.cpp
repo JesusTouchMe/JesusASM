@@ -4,6 +4,7 @@
 
 #include "JesusASM/tree/FieldNode.h"
 
+#include <format>
 #include <stdexcept>
 
 namespace JesusASM::tree {
@@ -16,6 +17,10 @@ namespace JesusASM::tree {
         : modifiers(modifiers)
         , name(std::move(name))
         , descriptor(std::move(descriptor)) {}
+
+    void FieldNode::print(std::ostream& stream) const {
+        stream << std::format("field {}:{}", name, descriptor);
+    }
 
     void FieldNode::emit(moduleweb::FieldBuilder& builder) {
         if (name.empty() || descriptor.empty()) {

@@ -2,6 +2,7 @@
 
 #include "JesusASM/tree/instructions/CallInsnNode.h"
 
+#include <format>
 #include <stdexcept>
 
 namespace JesusASM::tree {
@@ -110,6 +111,10 @@ namespace JesusASM::tree {
         }
 
         return arguments;
+    }
+
+    void CallInsnNode::print(std::ostream& stream) const {
+        stream << std::format("{} Function {}:{}:{}", mOpcode.name, mModule, mName, mDescriptor);
     }
 
     void CallInsnNode::emit(moduleweb::InsnList& list) {

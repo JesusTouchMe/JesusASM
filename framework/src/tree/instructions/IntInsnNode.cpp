@@ -2,11 +2,30 @@
 
 #include "JesusASM/tree/instructions/IntInsnNode.h"
 
+#include <format>
+
 namespace JesusASM::tree {
+    static std::string_view GetOperandSizeString(OperandSize size) {
+        switch (size) {
+            case OperandSize::BYTE:
+                return "BYTE";
+            case OperandSize::SHORT:
+                return "SHORT";
+            case OperandSize::INT:
+                return "INT";
+            case OperandSize::LONG:
+                return "LONG";
+        }
+    }
+
     IntInsnNode::IntInsnNode(Opcode opcode, OperandSize size, i64 value)
         : AbstractInsnNode(InsnType::INT, opcode)
         , mSize(size)
         , mValue(value) {}
+
+    void IntInsnNode::print(std::ostream& stream) const {
+        stream << std::format("{} {} {}", mOpcode.name, GetOperandSizeString(mSize), mValue);
+    }
 
     void IntInsnNode::emit(moduleweb::InsnList& list) {
         switch (mSize) {

@@ -24,6 +24,8 @@ namespace JesusASM::tree {
         ClassNode(u16 modifiers, std::string_view name, Name superClass);
         ClassNode(u16 modifiers, std::string&& name, Name&& superClass);
 
+        void print(std::ostream& stream) const;
+
         void emit(moduleweb::ClassBuilder& builder);
     };
 }

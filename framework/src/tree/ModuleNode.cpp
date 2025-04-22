@@ -2,6 +2,7 @@
 
 #include "JesusASM/tree/ModuleNode.h"
 
+#include <format>
 #include <stdexcept>
 
 namespace JesusASM::tree {
@@ -12,6 +13,18 @@ namespace JesusASM::tree {
     ModuleNode::ModuleNode(u16 version, std::string&& name)
         : version(version)
         , name(std::move(name)) {}
+
+    void ModuleNode::print(std::ostream& stream) const {
+        stream << std::format("module {} using v{}", name, version);
+
+        for (const auto& classNode : classes) {
+            classNode->print(stream);
+        }
+
+        for (const auto& function : functions) {
+            function->print(stream);
+        }
+    }
 
     void ModuleNode::emit(moduleweb::ModuleBuilder& builder, moduleweb::ModuleInfo& info) {
         if (name.empty()) {

@@ -17,6 +17,8 @@ namespace JesusASM::tree {
         int getStackPushes() const override;
         int getStackPops() const override;
 
+        void print(std::ostream& stream) const override;
+
         void emit(moduleweb::InsnList& list) override;
 
     private:

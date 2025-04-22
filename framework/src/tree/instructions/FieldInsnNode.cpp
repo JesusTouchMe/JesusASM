@@ -2,6 +2,8 @@
 
 #include "JesusASM/tree/instructions/FieldInsnNode.h"
 
+#include <format>
+
 namespace JesusASM::tree {
 
     FieldInsnNode::FieldInsnNode(Opcode opcode, const Name& owner, std::string_view name, std::string_view descriptor)
@@ -77,6 +79,10 @@ namespace JesusASM::tree {
         }
 
         return pops;
+    }
+
+    void FieldInsnNode::print(std::ostream& stream) const {
+        stream << std::format("{} Field {}:{}:{}:{}", mOpcode.name, mOwnerModule, mOwner, mName, mDescriptor);
     }
 
     void FieldInsnNode::emit(moduleweb::InsnList& list) {

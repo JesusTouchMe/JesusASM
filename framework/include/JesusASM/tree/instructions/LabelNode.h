@@ -21,6 +21,8 @@ namespace JesusASM::tree {
         void addPredecessor(LabelNode* label);
         void addSuccessor(LabelNode* label);
 
+        void print(std::ostream& stream) const override;
+
         void emit(moduleweb::InsnList& list) override;
 
     private:

@@ -2,6 +2,8 @@
 
 #include "JesusASM/tree/instructions/ClassInsnNode.h"
 
+#include <format>
+
 namespace JesusASM::tree {
     ClassInsnNode::ClassInsnNode(Opcode opcode, const Name& qualifiedName)
         : ClassInsnNode(opcode, qualifiedName.moduleName, qualifiedName.name) {}
@@ -15,6 +17,10 @@ namespace JesusASM::tree {
         : AbstractInsnNode(InsnType::CLASS, opcode)
         , mModule(std::move(module))
         , mName(std::move(name)) {}
+
+    void ClassInsnNode::print(std::ostream& stream) const {
+        stream << std::format("{} Class {}:{}", mOpcode.name, mModule, mName);
+    }
 
     void ClassInsnNode::emit(moduleweb::InsnList& list) {
         list.classInsn(mOpcode.opcode, mModule, mName);

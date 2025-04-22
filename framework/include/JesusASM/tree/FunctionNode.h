@@ -26,6 +26,8 @@ namespace JesusASM::tree {
         FunctionNode(u16 modifiers, std::string_view name, std::string_view descriptor);
         FunctionNode(u16 modifiers, std::string&& name, std::string&& descriptor);
 
+        void print(std::ostream& stream) const;
+
         void emit(moduleweb::FunctionBuilder& builder);
     };
 }
