@@ -15,7 +15,7 @@ namespace JesusASM::tree {
         , name(std::move(name)) {}
 
     void ModuleNode::print(std::ostream& stream) const {
-        stream << std::format("module {} using v{}", name, version);
+        stream << std::format("module {} using v{}\n\n", name, version);
 
         for (const auto& classNode : classes) {
             classNode->print(stream);
@@ -24,6 +24,8 @@ namespace JesusASM::tree {
         for (const auto& function : functions) {
             function->print(stream);
         }
+
+        stream << "\n\n";
     }
 
     void ModuleNode::emit(moduleweb::ModuleBuilder& builder, moduleweb::ModuleInfo& info) {
