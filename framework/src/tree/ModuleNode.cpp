@@ -19,13 +19,13 @@ namespace JesusASM::tree {
 
         for (const auto& classNode : classes) {
             classNode->print(stream);
+            stream << "\n\n";
         }
 
         for (const auto& function : functions) {
             function->print(stream);
+            stream << "\n\n";
         }
-
-        stream << "\n\n";
     }
 
     void ModuleNode::emit(moduleweb::ModuleBuilder& builder, moduleweb::ModuleInfo& info) {
