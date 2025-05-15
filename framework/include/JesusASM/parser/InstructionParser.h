@@ -17,6 +17,7 @@
 #include "JesusASM/tree/instructions/CallInsnNode.h"
 #include "JesusASM/tree/instructions/ClassInsnNode.h"
 #include "JesusASM/tree/instructions/FieldInsnNode.h"
+#include "JesusASM/tree/instructions/GlobalVarInsnNode.h"
 #include "JesusASM/tree/instructions/InsnNode.h"
 #include "JesusASM/tree/instructions/IntInsnNode.h"
 #include "JesusASM/tree/instructions/JumpInsnNode.h"
@@ -30,7 +31,7 @@
 #include <vector>
 
 namespace JesusASM::parser {
-    struct CallTarget {
+    struct GenericTargetSymbol {
         std::string module;
         std::string name;
         std::string descriptor;
@@ -41,6 +42,9 @@ namespace JesusASM::parser {
         std::string name;
         std::string descriptor;
     };
+
+    using CallTarget = GenericTargetSymbol;
+    using GlobalVarTarget = GenericTargetSymbol;
 
     template<class Insn, Opcode opcode, tree::OperandSize operandSize = tree::OperandSize::INT>
     class InstructionParser {
@@ -63,6 +67,9 @@ namespace JesusASM::parser {
             } else if constexpr (std::derived_from<Insn, tree::FieldInsnNode>) {
                 FieldTarget target = parseFieldTarget();
                 return std::make_unique<Insn>(opcode, target.owner, target.name, target.descriptor);
+            } else if constexpr (std::derived_from<Insn, tree::GlobalVarInsnNode>) {
+                GlobalVarTarget target = parseGlobalVarTarget();
+                return std::make_unique<Insn>(opcode, target.module, target.name, target.descriptor);
             } else if constexpr (std::derived_from<Insn, tree::IntInsnNode>) {
                 i64 value = parseInt();
                 return std::make_unique<Insn>(opcode, operandSize, value);
@@ -230,6 +237,27 @@ namespace JesusASM::parser {
             mTokens.consume();
 
             type = parseType();
+            target.descriptor = type->getDescriptor();
+
+            return target;
+        }
+
+        GlobalVarTarget parseGlobalVarTarget() {
+            GlobalVarTarget target;
+
+            mTokens.expect(lexer::TokenType::Identifier);
+            target.module = parseModuleName();
+
+            mTokens.expect(lexer::TokenType::Colon);
+            mTokens.consume();
+
+            mTokens.expect(lexer::TokenType::Identifier);
+            target.name = mTokens.consume().getText();
+
+            mTokens.expect(lexer::TokenType::Colon);
+            mTokens.consume();
+
+            Type* type = parseType();
             target.descriptor = type->getDescriptor();
 
             return target;

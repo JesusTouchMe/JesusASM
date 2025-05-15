@@ -5,6 +5,7 @@
 
 #include "JesusASM/moduleweb-wrappers/ClassBuilder.h"
 #include "JesusASM/moduleweb-wrappers/FunctionBuilder.h"
+#include "JesusASM/moduleweb-wrappers/GlobalVarBuilder.h"
 #include "JesusASM/moduleweb-wrappers/ModuleInfo.h"
 
 namespace moduleweb {

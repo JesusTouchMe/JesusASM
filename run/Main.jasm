@@ -1,10 +1,16 @@
+public global int abcdef;
+
 public void main() {
     Code {
-        ldc "Main"
+        ldc "Plugin"
         call vm/System:loadPlugin:void(std/Primitives:String)
 
-        call Example:main:void()
+        bpush 34
+        setglobal Main:abcdef:int
+
+        getglobal Main:abcdef:int
+        call std/IO:print:void(int)
 
         return
-   }
+    }
 }

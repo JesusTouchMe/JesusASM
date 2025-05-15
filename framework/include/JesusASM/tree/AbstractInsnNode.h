@@ -23,6 +23,7 @@ namespace JesusASM::tree {
         JUMP,
         CLASS,
         FIELD,
+        GLOBAL,
         VAR,
         INT,
     };

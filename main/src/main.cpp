@@ -41,9 +41,9 @@ int main(int argc, char** argv) {
 
         std::string text = buffer.str();
 
-        lexer::Lexer lexer(text, fileName);
+        JesusASM::lexer::Lexer lexer(text, fileName);
 
-        std::vector<lexer::Token> tokens = lexer.lex();
+        std::vector<JesusASM::lexer::Token> tokens = lexer.lex();
 
         JesusASM::parser::Parser parser(fileName, tokens);
         std::unique_ptr<JesusASM::tree::ModuleNode> module = parser.parse();

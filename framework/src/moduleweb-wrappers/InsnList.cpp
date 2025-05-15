@@ -104,6 +104,20 @@ namespace moduleweb {
         return *this;
     }
 
+    InsnList& InsnList::globalVarInsn(Opcode opcode, std::string_view module, std::string_view name, std::string_view descriptor) {
+        std::string tempModule(module);
+        std::string tempName(name);
+        std::string tempDesc(descriptor);
+
+        return this->globalVarInsn(opcode, tempModule, tempName, tempDesc);
+    }
+
+    InsnList& InsnList::globalVarInsn(Opcode opcode, std::string& module, std::string& name, std::string& descriptor) {
+        moduleweb_insn_list_global_var(&mList, opcode, module.c_str(),
+                                       name.c_str(), descriptor.c_str());
+        return *this;
+    }
+
     InsnList& InsnList::ldcInsn(std::string_view value) {
         std::string tmp(value);
         return ldcInsn(tmp);

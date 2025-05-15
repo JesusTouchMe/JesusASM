@@ -5,6 +5,7 @@
 
 #include "JesusASM/tree/ClassNode.h"
 #include "JesusASM/tree/FunctionNode.h"
+#include "JesusASM/tree/GlobalVarNode.h"
 
 #include "JesusASM/moduleweb-wrappers/ModuleBuilder.h"
 
@@ -20,6 +21,7 @@ namespace JesusASM::tree {
 
         std::vector<std::unique_ptr<IAttribute>> attributes;
         std::vector<std::unique_ptr<ClassNode>> classes;
+        std::vector<std::unique_ptr<GlobalVarNode>> globals;
         std::vector<std::unique_ptr<FunctionNode>> functions;
 
         ModuleNode() = default;

@@ -26,6 +26,12 @@ namespace JesusASM::parser {
                 { lexer::TokenType::VolatileKeyword,    MODULEWEB_FIELD_MODIFIER_VOLATILE },
         };
 
+        mGlobalVarModifiers = {
+                { lexer::TokenType::PublicKeyword,      MODULEWEB_GLOBAL_VAR_MODIFIER_PUBLIC },
+                { lexer::TokenType::PrivateKeyword,     MODULEWEB_GLOBAL_VAR_MODIFIER_PRIVATE },
+                { lexer::TokenType::VolatileKeyword,    MODULEWEB_GLOBAL_VAR_MODIFIER_VOLATILE },
+        };
+
         mFunctionModifiers = {
                 { lexer::TokenType::PublicKeyword,      MODULEWEB_FUNCTION_MODIFIER_PUBLIC },
                 { lexer::TokenType::PrivateKeyword,     MODULEWEB_FUNCTION_MODIFIER_PRIVATE },
@@ -118,6 +124,9 @@ namespace JesusASM::parser {
                 { "getfield",       [this](auto& instructions) { return InstructionParser<tree::FieldInsnNode, Opcodes::GETFIELD>(instructions, mLabelList).parse(mTokenStream); } },
                 { "setfield",       [this](auto& instructions) { return InstructionParser<tree::FieldInsnNode, Opcodes::SETFIELD>(instructions, mLabelList).parse(mTokenStream); } },
 
+                { "getglobal",      [this](auto& instructions) { return InstructionParser<tree::GlobalVarInsnNode, Opcodes::GETGLOBAL>(instructions, mLabelList).parse(mTokenStream); } },
+                { "setglobal",      [this](auto& instructions) { return InstructionParser<tree::GlobalVarInsnNode, Opcodes::SETGLOBAL>(instructions, mLabelList).parse(mTokenStream); } },
+
                 { "jmp_icmpeq",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPEQ>(instructions, mLabelList).parse(mTokenStream); } },
                 { "jmp_icmpne",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPNE>(instructions, mLabelList).parse(mTokenStream); } },
                 { "jmp_icmplt",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPLT>(instructions, mLabelList).parse(mTokenStream); } },
@@ -197,7 +206,7 @@ namespace JesusASM::parser {
             populateModule();
         }
 
-        return std::move(module);
+        return module;
     }
 
     bool Parser::isModifier() {
@@ -235,6 +244,10 @@ namespace JesusASM::parser {
 
             case lexer::TokenType::ClassKeyword:
                 mModule->classes.push_back(parseClass(modifiers));
+                break;
+
+            case lexer::TokenType::GlobalKeyword:
+                mModule->globals.push_back(parseGlobalVar(modifiers));
                 break;
 
             case lexer::TokenType::Type:
@@ -369,6 +382,35 @@ namespace JesusASM::parser {
         consume();
 
         return std::move(clas);
+    }
+
+    std::unique_ptr<tree::GlobalVarNode> Parser::parseGlobalVar(const std::vector<lexer::TokenType>& modifiers) {
+        consume(); // global
+
+        auto global = std::make_unique<tree::GlobalVarNode>();
+
+        for (auto modifier : modifiers) {
+            auto it = mGlobalVarModifiers.find(modifier);
+            if (it == mGlobalVarModifiers.end()) {
+                std::cout << "weird global modifier detected: "
+                          << lexer::Token("", modifier, lexer::SourceLocation(), lexer::SourceLocation()).getName()
+                          << "\n";
+                std::exit(1);
+            }
+
+            global->modifiers |= it->second;
+        }
+
+        Type* type = parseType();
+
+        expectToken(lexer::TokenType::Identifier);
+        global->name = consume().getText();
+        global->descriptor = type->getDescriptor();
+
+        expectToken(lexer::TokenType::Semicolon);
+        consume();
+
+        return global;
     }
 
     std::unique_ptr<tree::FunctionNode> Parser::parseFunction(const std::vector<lexer::TokenType>& modifiers) {

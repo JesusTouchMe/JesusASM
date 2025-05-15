@@ -43,6 +43,9 @@ set(SOURCES
     src/tree/instructions/LdcInsnNode.cpp
         src/Attributes.cpp
     src/Opcodes.cpp
+        src/moduleweb-wrappers/GlobalVarBuilder.cpp
+        src/tree/GlobalVarNode.cpp
+        src/tree/instructions/GlobalVarInsnNode.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h
@@ -78,6 +81,9 @@ set(HEADERS
         include/JesusASM/parser/TokenStream.h
     include/JesusASM/tree/instructions/LdcInsnNode.h
         include/JesusASM/Attributes.h
+        include/JesusASM/moduleweb-wrappers/GlobalVarBuilder.h
+        include/JesusASM/tree/GlobalVarNode.h
+        include/JesusASM/tree/instructions/GlobalVarInsnNode.h
 )
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
