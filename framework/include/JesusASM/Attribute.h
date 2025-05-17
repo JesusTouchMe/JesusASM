@@ -35,6 +35,7 @@ namespace JesusASM {
         virtual void emit(moduleweb::AttributeBuilder<moduleweb::ModuleBuilder>& builder) = 0;
         virtual void emit(moduleweb::AttributeBuilder<moduleweb::ClassBuilder>& builder) = 0;
         virtual void emit(moduleweb::AttributeBuilder<moduleweb::FieldBuilder>& builder) = 0;
+        virtual void emit(moduleweb::AttributeBuilder<moduleweb::GlobalVarBuilder>& builder) = 0;
         virtual void emit(moduleweb::AttributeBuilder<moduleweb::FunctionBuilder>& builder) = 0;
     };
 
@@ -67,6 +68,10 @@ namespace JesusASM {
         }
 
         void emit(moduleweb::AttributeBuilder<moduleweb::FieldBuilder>& builder) override {
+            emitT(builder);
+        }
+
+        void emit(moduleweb::AttributeBuilder<moduleweb::GlobalVarBuilder>& builder) override {
             emitT(builder);
         }
 
@@ -139,6 +144,10 @@ namespace JesusASM {
             emitT(builder);
         }
 
+        void emit(moduleweb::AttributeBuilder<moduleweb::GlobalVarBuilder>& builder) override {
+            emitT(builder);
+        }
+
         void emit(moduleweb::AttributeBuilder<moduleweb::FunctionBuilder>& builder) override {
             emitT(builder);
         }
@@ -195,6 +204,10 @@ namespace JesusASM {
             emitT(builder);
         }
 
+        void emit(moduleweb::AttributeBuilder<moduleweb::GlobalVarBuilder>& builder) override {
+            emitT(builder);
+        }
+
         void emit(moduleweb::AttributeBuilder<moduleweb::FunctionBuilder>& builder) override {
             emitT(builder);
         }
@@ -240,6 +253,10 @@ namespace JesusASM {
         }
 
         void emit(moduleweb::AttributeBuilder<moduleweb::FieldBuilder>& builder) override {
+            emitT(builder);
+        }
+
+        void emit(moduleweb::AttributeBuilder<moduleweb::GlobalVarBuilder>& builder) override {
             emitT(builder);
         }
 

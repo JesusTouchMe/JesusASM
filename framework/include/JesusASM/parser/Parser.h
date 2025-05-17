@@ -34,6 +34,7 @@ namespace JesusASM::parser {
 
         std::unordered_map<lexer::TokenType, u16> mClassModifiers;
         std::unordered_map<lexer::TokenType, u16> mFieldModifiers;
+        std::unordered_map<lexer::TokenType, u16> mGlobalVarModifiers;
         std::unordered_map<lexer::TokenType, u16> mFunctionModifiers;
 
         std::unordered_map<std::string_view, std::function<std::unique_ptr<tree::AbstractInsnNode>(tree::InsnList& instructions)>> mInstructionParsers;
@@ -53,6 +54,7 @@ namespace JesusASM::parser {
 
         std::unique_ptr<IAttribute> parseAttribute();
         std::unique_ptr<tree::ClassNode> parseClass(const std::vector<lexer::TokenType>& modifiers);
+        std::unique_ptr<tree::GlobalVarNode> parseGlobalVar(const std::vector<lexer::TokenType>& modifiers);
         std::unique_ptr<tree::FunctionNode> parseFunction(const std::vector<lexer::TokenType>& modifiers);
 
         void parseFunctionBody(tree::FunctionNode* function);

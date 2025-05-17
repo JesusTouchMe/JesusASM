@@ -1,4 +1,4 @@
-tokens {
+tokens JesusASM {
     +
     -
     *
@@ -36,6 +36,7 @@ tokens {
     async
     const
     final
+    global
     native
     public
     private
@@ -102,6 +103,8 @@ tokens {
     isinstance Instruction
     getfield Instruction
     setfield Instruction
+    getglobal Instruction
+    setglobal Instruction
     jmp_icmpeq Instruction
     jmp_icmpne Instruction
     jmp_icmplt Instruction

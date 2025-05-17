@@ -43,6 +43,11 @@ namespace JesusASM::tree {
             clas->emit(classBuilder);
         }
 
+        moduleweb::GlobalVarBuilder globalVarBuilder(builder);
+        for (auto& global : globals) {
+            global->emit(globalVarBuilder);
+        }
+
         moduleweb::FunctionBuilder functionBuilder(builder);
         for (auto& func : functions) {
             func->emit(functionBuilder);
