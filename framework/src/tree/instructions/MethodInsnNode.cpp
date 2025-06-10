@@ -109,7 +109,7 @@ namespace JesusASM::tree {
     }
 
     void MethodInsnNode::print(std::ostream& stream) const {
-        stream << std::format("{} Method {}:{}:{}:{}", mOwnerModule, mOwner, mName, mDescriptor);
+        stream << std::format("{} Method {}:{}:{}:{}", mOpcode.name, mOwnerModule, mOwner, mName, mDescriptor);
     }
 
     void MethodInsnNode::emit(moduleweb::InsnList& list) {
