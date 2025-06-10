@@ -118,9 +118,6 @@ namespace JesusASM::EnumOpcodes {
             EnumOpcodesMember(Opcodes::HRETURN, "hreturn", 0, 2),
             EnumOpcodesMember(Opcodes::RRETURN, "rreturn", 0, 2),
             EnumOpcodesMember(Opcodes::LDC, "ldc", 0, 0), // push/pop implemented by LdcInsnNode
-            EnumOpcodesMember(Opcodes::BREAKPOINT, "breakpoint", 0, 0),
-            EnumOpcodesMember(Opcodes::RESERVE1, "reserve1", 0, 0),
-            EnumOpcodesMember(Opcodes::RESERVE2, "reserve2", 0, 0),
     };
 
     const EnumOpcodesMember& Get(Opcode opcode) {

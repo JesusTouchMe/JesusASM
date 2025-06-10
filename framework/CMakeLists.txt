@@ -46,6 +46,9 @@ set(SOURCES
         src/moduleweb-wrappers/GlobalVarBuilder.cpp
         src/tree/GlobalVarNode.cpp
         src/tree/instructions/GlobalVarInsnNode.cpp
+        src/moduleweb-wrappers/MethodBuilder.cpp
+        src/tree/MethodNode.cpp
+        src/tree/instructions/MethodInsnNode.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h
@@ -84,6 +87,9 @@ set(HEADERS
         include/JesusASM/moduleweb-wrappers/GlobalVarBuilder.h
         include/JesusASM/tree/GlobalVarNode.h
         include/JesusASM/tree/instructions/GlobalVarInsnNode.h
+        include/JesusASM/moduleweb-wrappers/MethodBuilder.h
+        include/JesusASM/tree/MethodNode.h
+        include/JesusASM/tree/instructions/MethodInsnNode.h
 )
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})

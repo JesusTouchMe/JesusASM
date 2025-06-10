@@ -1,4 +1,6 @@
-public global int abcdef;
+public class Bingus {
+
+}
 
 public void main() {
     Code {

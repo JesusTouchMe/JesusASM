@@ -8,6 +8,7 @@
 #include "JesusASM/moduleweb-wrappers/ClassBuilder.h"
 
 #include "JesusASM/tree/FieldNode.h"
+#include "JesusASM/tree/MethodNode.h"
 
 #include "moduleweb/class_info.h"
 
@@ -19,6 +20,7 @@ namespace JesusASM::tree {
 
         std::vector<std::unique_ptr<IAttribute>> attributes;
         std::vector<std::unique_ptr<FieldNode>> fields;
+        std::vector<std::unique_ptr<MethodNode>> methods;
 
         ClassNode() = default;
         ClassNode(u16 modifiers, std::string_view name, Name superClass);

@@ -4,6 +4,7 @@
 #define JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_MODULEWEB_WRAPPERS_CLASSBUILDER_H 1
 
 #include "JesusASM/moduleweb-wrappers/FieldBuilder.h"
+#include "JesusASM/moduleweb-wrappers/MethodBuilder.h"
 
 namespace moduleweb {
     class ModuleBuilder;
@@ -11,6 +12,7 @@ namespace moduleweb {
     class ClassBuilder {
     friend class AttributeBuilder<ClassBuilder>;
     friend class FieldBuilder;
+    friend class MethodBuilder;
     public:
         explicit ClassBuilder(ModuleBuilder& module);
 

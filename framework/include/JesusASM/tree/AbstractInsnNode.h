@@ -7,8 +7,6 @@
 
 #include "JesusASM/moduleweb-wrappers/InsnList.h"
 
-#include "moduleweb/types.h"
-
 #include <memory>
 
 namespace JesusASM::tree {
@@ -23,6 +21,7 @@ namespace JesusASM::tree {
         JUMP,
         CLASS,
         FIELD,
+        METHOD,
         GLOBAL,
         VAR,
         INT,

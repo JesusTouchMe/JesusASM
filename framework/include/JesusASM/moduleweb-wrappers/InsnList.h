@@ -48,6 +48,9 @@ namespace moduleweb {
         InsnList& fieldInsn(Opcode opcode, std::string& ownerModule, std::string& owner,
                             std::string& name, std::string& descriptor);
 
+        InsnList& methodInsn(Opcode opcode, std::string& ownerModule, std::string& owner,
+                             std::string& name, std::string& descriptor);
+
         InsnList& globalVarInsn(Opcode opcode, std::string_view module,
                                 std::string_view name, std::string_view descriptor);
 

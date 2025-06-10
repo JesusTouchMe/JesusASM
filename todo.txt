@@ -1,0 +1,2 @@
+make all the things that take strings be actually good. look at bibble for inspiration
+asm-syntax for methods

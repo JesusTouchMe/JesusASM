@@ -4,7 +4,6 @@
 #define JESUSASM_FRAMEWORK_INCLUDE_JESUSASM_OPCODES_H 1
 
 #include <string>
-#include <vector>
 
 namespace JesusASM {
     namespace Opcodes {

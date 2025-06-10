@@ -50,6 +50,11 @@ namespace JesusASM::tree {
             field->emit(fieldBuilder);
         }
 
+        moduleweb::MethodBuilder methodBuilder(builder);
+        for (auto& method : methods) {
+            method->emit(methodBuilder);
+        }
+
         builder
             .modifiers(modifiers)
             .name(name);
