@@ -22,7 +22,7 @@ namespace JesusASM::tree {
     }
 
     void LdcInsnNode::print(std::ostream& stream) const {
-        stream << std::format("{} {}", mOpcode.name, mValue);
+        stream << std::format("{} \"{}\"", mOpcode.name, mValue);
     }
 
     void LdcInsnNode::emit(moduleweb::InsnList& list) {
