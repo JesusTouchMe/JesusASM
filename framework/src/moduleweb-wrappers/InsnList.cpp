@@ -108,6 +108,7 @@ namespace moduleweb {
                                    std::string& name, std::string& descriptor) {
         moduleweb_insn_list_method(&mList, opcode, ownerModule.c_str(), owner.c_str(),
                                    name.c_str(), descriptor.c_str());
+        return *this;
     }
 
     InsnList& InsnList::globalVarInsn(Opcode opcode, std::string_view module, std::string_view name, std::string_view descriptor) {
