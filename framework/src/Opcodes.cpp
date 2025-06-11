@@ -112,6 +112,7 @@ namespace JesusASM::EnumOpcodes {
             EnumOpcodesMember(Opcodes::HCONST_NULL, "hconst_null", 2, 0),
             EnumOpcodesMember(Opcodes::RCONST_NULL, "rconst_null", 2, 0),
             EnumOpcodesMember(Opcodes::CALL, "call", 0, 0), // push/pop implemented by CallInsnNode
+            EnumOpcodesMember(Opcodes::CALLVIRTUAL, "callvirtual", 0, 0), // push/pop implemented by MethodInsnNode
             EnumOpcodesMember(Opcodes::RETURN, "return", 0, 0),
             EnumOpcodesMember(Opcodes::IRETURN, "ireturn", 0, 1),
             EnumOpcodesMember(Opcodes::LRETURN, "lreturn", 0, 2),
