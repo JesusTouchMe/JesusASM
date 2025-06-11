@@ -32,6 +32,12 @@ namespace JesusASM::tree {
             stream << "\n";
         }
 
+        for (const auto& method : methods) {
+            stream << "    ";
+            method->print(stream);
+            stream << "\n";
+        }
+
         stream << "}";
     }
 
