@@ -62,6 +62,8 @@ namespace moduleweb {
 
         InsnList& varInsn(Opcode opcode, u16 local);
 
+        InsnList& incInsn(Opcode opcode, u16 local, i16 increment);
+
         InsnList& byteInsn(Opcode opcode, i8 value);
         InsnList& shortInsn(Opcode opcode, i16 value);
         InsnList& intInsn(Opcode opcode, i32 value);

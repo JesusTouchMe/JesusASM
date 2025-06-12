@@ -1,2 +1,3 @@
 make all the things that take strings be actually good. look at bibble for inspiration
+revisit new features for the parser
 asm-syntax for methods

@@ -24,6 +24,7 @@ namespace JesusASM::tree {
         METHOD,
         GLOBAL,
         VAR,
+        INC,
         INT,
     };
 

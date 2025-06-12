@@ -140,6 +140,11 @@ namespace moduleweb {
         return *this;
     }
 
+    InsnList& InsnList::incInsn(Opcode opcode, u16 local, i16 increment) {
+        moduleweb_insn_list_inc(&mList, opcode, local, increment);
+        return *this;
+    }
+
     InsnList& InsnList::byteInsn(Opcode opcode, i8 value) {
         moduleweb_insn_list_byte(&mList, opcode, value);
         return *this;

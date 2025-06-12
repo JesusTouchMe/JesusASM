@@ -90,6 +90,7 @@ set(HEADERS
         include/JesusASM/moduleweb-wrappers/MethodBuilder.h
         include/JesusASM/tree/MethodNode.h
         include/JesusASM/tree/instructions/MethodInsnNode.h
+        include/JesusASM/tree/instructions/IncInsnNode.h
 )
 
 source_group(TREE ${PROJECT_SOURCE_DIR} FILES ${SOURCES} ${HEADERS})
