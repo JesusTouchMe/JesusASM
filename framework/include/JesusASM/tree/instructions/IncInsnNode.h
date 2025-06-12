@@ -8,7 +8,7 @@
 namespace JesusASM::tree {
     class IncInsnNode : public AbstractInsnNode {
     public:
-        VarInsnNode(Opcode opcode, u16 index);
+        IncInsnNode(Opcode opcode, u16 index, i16 increment);
 
         void print(std::ostream& stream) const override;
 
@@ -16,6 +16,7 @@ namespace JesusASM::tree {
 
     private:
         u16 mIndex;
+        i16 mIncrement;
     };
 }
 

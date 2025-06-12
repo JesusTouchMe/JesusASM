@@ -49,6 +49,7 @@ set(SOURCES
         src/moduleweb-wrappers/MethodBuilder.cpp
         src/tree/MethodNode.cpp
         src/tree/instructions/MethodInsnNode.cpp
+    src/tree/instructions/IncInsnNode.cpp
 )
 set(HEADERS
     include/JesusASM/tree/ModuleNode.h
