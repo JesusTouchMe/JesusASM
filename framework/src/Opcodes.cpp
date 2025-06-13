@@ -88,7 +88,7 @@ namespace JesusASM::EnumOpcodes {
             EnumOpcodesMember(Opcodes::LPUSH, "lpush", 1, 0),
             EnumOpcodesMember(Opcodes::L2B, "l2b", 1, 1),
             EnumOpcodesMember(Opcodes::L2S, "l2s", 1, 1),
-            EnumOpcodesMember(Opcodes::L2I, "l2i", 1, 2),
+            EnumOpcodesMember(Opcodes::L2I, "l2i", 1, 1),
             EnumOpcodesMember(Opcodes::CONST_M1, "const_m1", 1, 0),
             EnumOpcodesMember(Opcodes::CONST_0, "const_0", 1, 0),
             EnumOpcodesMember(Opcodes::CONST_1, "const_1", 1, 0),
