@@ -25,7 +25,7 @@ namespace JesusASM::EnumOpcodes {
             EnumOpcodesMember(Opcodes::DUP, "dup", 2, 1),
             EnumOpcodesMember(Opcodes::DUP2, "dup2", 4, 2),
             EnumOpcodesMember(Opcodes::DUP_X1, "dup_x1", 3, 2),
-            EnumOpcodesMember(Opcodes::DUP_X1, "dup_x1", 4, 3),
+            EnumOpcodesMember(Opcodes::DUP_X2, "dup_x2", 4, 3),
             EnumOpcodesMember(Opcodes::SWAP, "swap", 2, 2),
             EnumOpcodesMember(Opcodes::INC, "inc", 0, 0),
             EnumOpcodesMember(Opcodes::LOAD, "load", 1, 0),
