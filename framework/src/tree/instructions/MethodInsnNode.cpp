@@ -19,28 +19,8 @@ namespace JesusASM::tree {
         }
 
         char c = mDescriptor[pos + 1];
-        switch (c) {
-            case 'V':
-                return 0;
-
-            case 'B':
-            case 'S':
-            case 'I':
-            case 'C':
-            case 'Z':
-            case 'F':
-                return 1;
-
-            case 'R':
-            case '[':
-            case 'H':
-            case 'L':
-            case 'D':
-                return 2;
-
-            default:
-                throw std::runtime_error("Bad descriptor");
-        }
+        if (c == 'V') return 0;
+        else return 1;
     }
 
     int MethodInsnNode::getStackPops() const {
@@ -48,7 +28,7 @@ namespace JesusASM::tree {
             throw std::runtime_error("bad descriptor");
         }
 
-        int arguments = 2; // a method descriptor doesn't have the 'this' argument unlkie the function it points to
+        int arguments = 1; // a method descriptor doesn't have the 'this' argument unlkie the function it points to
 
         size_t i = 1;
         while (i < mDescriptor.size() && mDescriptor[i] != ')') {
