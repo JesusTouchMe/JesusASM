@@ -25,27 +25,8 @@ namespace JesusASM::tree {
         }
 
         char c = mDescriptor[pos + 1];
-        switch (c) {
-            case 'V':
-                return 0;
-
-            case 'B':
-            case 'S':
-            case 'I':
-            case 'C':
-            case 'Z':
-                return 1;
-
-            case 'R':
-            case '[':
-            case 'H':
-            case 'L':
-            case 'D':
-                return 2;
-
-            default:
-                throw std::runtime_error("Bad descriptor");
-        }
+        if (c == 'V') return 0;
+        else return 1;
     }
 
     int CallInsnNode::getStackPops() const {
@@ -66,13 +47,10 @@ namespace JesusASM::tree {
                 case 'C':
                 case 'Z':
                 case 'F':
-                    arguments += 1;
-                    i++;
-                    break;
-
                 case 'L':
                 case 'D':
-                    arguments += 2;
+                case 'H':
+                    arguments += 1;
                     i++;
                     break;
 
@@ -82,7 +60,7 @@ namespace JesusASM::tree {
                         throw std::invalid_argument("Unterminated object type in descriptor");
                     }
 
-                    arguments += 2;
+                    arguments += 1;
                     i = semicolon + 1;
 
                     break;
@@ -100,7 +78,7 @@ namespace JesusASM::tree {
                     } else {
                         i++;
                     }
-                    arguments += 2;
+                    arguments += 1;
 
                     break;
                 }

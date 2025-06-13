@@ -61,15 +61,12 @@ namespace JesusASM::tree {
                 case 'C':
                 case 'Z':
                 case 'F':
-                    arguments += 1;
-                i++;
-                break;
-
                 case 'L':
                 case 'D':
-                    arguments += 2;
-                i++;
-                break;
+                case 'H':
+                    arguments += 1;
+                    i++;
+                    break;
 
                 case 'R': {
                     size_t semicolon = mDescriptor.find(';', i);
@@ -77,7 +74,7 @@ namespace JesusASM::tree {
                         throw std::invalid_argument("Unterminated object type in descriptor");
                     }
 
-                    arguments += 2;
+                    arguments += 1;
                     i = semicolon + 1;
 
                     break;
@@ -95,7 +92,7 @@ namespace JesusASM::tree {
                     } else {
                         i++;
                     }
-                    arguments += 2;
+                    arguments += 1;
 
                     break;
                 }

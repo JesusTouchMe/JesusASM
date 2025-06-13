@@ -47,7 +47,6 @@ namespace JesusASM::tree {
 
             switch (mOpcode.opcode) {
                 case Opcodes::RETURN:
-                case Opcodes::IRETURN:
                 case Opcodes::LRETURN:
                 case Opcodes::HRETURN:
                 case Opcodes::RRETURN:

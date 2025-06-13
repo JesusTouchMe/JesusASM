@@ -17,58 +17,6 @@ namespace JesusASM::tree {
         , mName(std::move(name))
         , mDescriptor(std::move(descriptor)) {}
 
-    int GlobalVarInsnNode::getStackPushes() const {
-        if (mOpcode.opcode == Opcodes::GETGLOBAL) {
-            char c = mDescriptor[0];
-            switch (c) {
-                case 'B':
-                case 'S':
-                case 'I':
-                case 'C':
-                case 'Z':
-                    return 1;
-
-                case 'R':
-                case '[':
-                case 'H':
-                case 'L':
-                case 'D':
-                    return 2;
-
-                default:
-                    throw std::runtime_error("Bad descriptor");
-            }
-        }
-
-        return 0;
-    }
-
-    int GlobalVarInsnNode::getStackPops() const {
-        if (mOpcode.opcode == Opcodes::SETGLOBAL) {
-            char c = mDescriptor[0];
-            switch (c) {
-                case 'B':
-                case 'S':
-                case 'I':
-                case 'C':
-                case 'Z':
-                    return 1;
-
-                case 'R':
-                case '[':
-                case 'H':
-                case 'L':
-                case 'D':
-                    return 2;
-
-                default:
-                    throw std::runtime_error("Bad descriptor");
-            }
-        }
-
-        return 0;
-    }
-
     void GlobalVarInsnNode::print(std::ostream& stream) const {
         stream << std::format("{} Global {}:{}:{}", mOpcode.name, mModule, mName, mDescriptor);
     }

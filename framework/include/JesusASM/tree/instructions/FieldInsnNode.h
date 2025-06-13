@@ -14,9 +14,6 @@ namespace JesusASM::tree {
         FieldInsnNode(Opcode opcode, std::string_view ownerModule, std::string_view owner, std::string_view name, std::string_view descriptor);
         FieldInsnNode(Opcode opcode, std::string&& ownerModule, std::string&& owner, std::string&& name, std::string&& descriptor);
 
-        int getStackPushes() const override;
-        int getStackPops() const override;
-
         void print(std::ostream& stream) const override;
 
         void emit(moduleweb::InsnList& list) override;

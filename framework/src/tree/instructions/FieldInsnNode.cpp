@@ -25,62 +25,6 @@ namespace JesusASM::tree {
             , mName(std::move(name))
             , mDescriptor(std::move(descriptor)) {}
 
-    int FieldInsnNode::getStackPushes() const {
-        if (mOpcode.opcode == Opcodes::GETFIELD) {
-            char c = mDescriptor[0];
-            switch (c) {
-                case 'B':
-                case 'S':
-                case 'I':
-                case 'C':
-                case 'Z':
-                    return 1;
-
-                case 'R':
-                case '[':
-                case 'H':
-                case 'L':
-                case 'D':
-                    return 2;
-
-                default:
-                    throw std::runtime_error("Bad descriptor");
-            }
-        }
-
-        return 0;
-    }
-
-    int FieldInsnNode::getStackPops() const {
-        i32 pops = 2; // the object
-
-        if (mOpcode.opcode == Opcodes::SETFIELD) {
-            char c = mDescriptor[0];
-            switch (c) {
-                case 'B':
-                case 'S':
-                case 'I':
-                case 'C':
-                case 'Z':
-                    pops += 1;
-                    break;
-
-                case 'R':
-                case '[':
-                case 'H':
-                case 'L':
-                case 'D':
-                    pops += 2;
-                    break;
-
-                default:
-                    throw std::runtime_error("Bad descriptor");
-            }
-        }
-
-        return pops;
-    }
-
     void FieldInsnNode::print(std::ostream& stream) const {
         stream << std::format("{} Field {}:{}:{}:{}", mOpcode.name, mOwnerModule, mOwner, mName, mDescriptor);
     }

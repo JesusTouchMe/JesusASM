@@ -14,7 +14,7 @@ namespace JesusASM::tree {
         , mValue(std::move(value)) {}
 
     int LdcInsnNode::getStackPushes() const {
-        return 2;
+        return 1;
     }
 
     int LdcInsnNode::getStackPops() const {

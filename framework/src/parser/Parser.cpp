@@ -49,41 +49,21 @@ namespace JesusASM::parser {
                 { "div",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::DIV>(instructions, mLabelList).parse(mTokenStream); } },
                 { "rem",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::REM>(instructions, mLabelList).parse(mTokenStream); } },
 
-                { "ladd",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LADD>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lsub",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LSUB>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lmul",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LMUL>(instructions, mLabelList).parse(mTokenStream); } },
-                { "ldiv",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LDIV>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lrem",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LREM>(instructions, mLabelList).parse(mTokenStream); } },
-
                 { "and",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::AND>(instructions, mLabelList).parse(mTokenStream); } },
                 { "or",             [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::OR>(instructions, mLabelList).parse(mTokenStream); } },
                 { "xor",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::XOR>(instructions, mLabelList).parse(mTokenStream); } },
                 { "shl",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::SHL>(instructions, mLabelList).parse(mTokenStream); } },
                 { "shr",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::SHR>(instructions, mLabelList).parse(mTokenStream); } },
 
-                { "land",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LAND>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lor",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LOR>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lxor",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LXOR>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lshl",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LSHL>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lshr",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LSHR>(instructions, mLabelList).parse(mTokenStream); } },
-
                 { "not",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::NOT>(instructions, mLabelList).parse(mTokenStream); } },
                 { "neg",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::NEG>(instructions, mLabelList).parse(mTokenStream); } },
 
-                { "lnot",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LNOT>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lneg",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LNEG>(instructions, mLabelList).parse(mTokenStream); } },
-
                 { "dup",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::DUP>(instructions, mLabelList).parse(mTokenStream); } },
-                { "dup2",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::DUP2>(instructions, mLabelList).parse(mTokenStream); } },
 
                 { "swap",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::SWAP>(instructions, mLabelList).parse(mTokenStream); } },
-                { "swap2",          [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::SWAP2>(instructions, mLabelList).parse(mTokenStream); } },
 
-                { "iload",          [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::ILOAD>(instructions, mLabelList).parse(mTokenStream); } },
-                { "istore",         [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::ISTORE>(instructions, mLabelList).parse(mTokenStream); } },
-
-                { "lload",          [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::LLOAD>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lstore",         [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::LSTORE>(instructions, mLabelList).parse(mTokenStream); } },
+                { "load",          [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::LOAD>(instructions, mLabelList).parse(mTokenStream); } },
+                { "store",         [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::STORE>(instructions, mLabelList).parse(mTokenStream); } },
 
                 { "hload",          [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::HLOAD>(instructions, mLabelList).parse(mTokenStream); } },
                 { "hstore",         [this](auto& instructions) { return InstructionParser<tree::VarInsnNode, Opcodes::HSTORE>(instructions, mLabelList).parse(mTokenStream); } },
@@ -127,12 +107,12 @@ namespace JesusASM::parser {
                 { "getglobal",      [this](auto& instructions) { return InstructionParser<tree::GlobalVarInsnNode, Opcodes::GETGLOBAL>(instructions, mLabelList).parse(mTokenStream); } },
                 { "setglobal",      [this](auto& instructions) { return InstructionParser<tree::GlobalVarInsnNode, Opcodes::SETGLOBAL>(instructions, mLabelList).parse(mTokenStream); } },
 
-                { "jmp_icmpeq",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPEQ>(instructions, mLabelList).parse(mTokenStream); } },
-                { "jmp_icmpne",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPNE>(instructions, mLabelList).parse(mTokenStream); } },
-                { "jmp_icmplt",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPLT>(instructions, mLabelList).parse(mTokenStream); } },
-                { "jmp_icmpgt",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPGT>(instructions, mLabelList).parse(mTokenStream); } },
-                { "jmp_icmple",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPLE>(instructions, mLabelList).parse(mTokenStream); } },
-                { "jmp_icmpge",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_ICMPGE>(instructions, mLabelList).parse(mTokenStream); } },
+                { "jmp_cmpeq",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_CMPEQ>(instructions, mLabelList).parse(mTokenStream); } },
+                { "jmp_cmpne",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_CMPNE>(instructions, mLabelList).parse(mTokenStream); } },
+                { "jmp_cmplt",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_CMPLT>(instructions, mLabelList).parse(mTokenStream); } },
+                { "jmp_cmpgt",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_CMPGT>(instructions, mLabelList).parse(mTokenStream); } },
+                { "jmp_cmple",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_CMPLE>(instructions, mLabelList).parse(mTokenStream); } },
+                { "jmp_cmpge",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_CMPGE>(instructions, mLabelList).parse(mTokenStream); } },
 
                 { "jmp_hcmpeq",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_HCMPEQ>(instructions, mLabelList).parse(mTokenStream); } },
                 { "jmp_hcmpne",     [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP_HCMPNE>(instructions, mLabelList).parse(mTokenStream); } },
@@ -154,8 +134,7 @@ namespace JesusASM::parser {
                 { "jmpge",          [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMPGE>(instructions, mLabelList).parse(mTokenStream); } },
                 { "jmp",            [this](auto& instructions) { return InstructionParser<tree::JumpInsnNode, Opcodes::JMP>(instructions, mLabelList).parse(mTokenStream); } },
 
-                { "icmp",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::ICMP>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lcmp",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LCMP>(instructions, mLabelList).parse(mTokenStream); } },
+                { "cmp",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::CMP>(instructions, mLabelList).parse(mTokenStream); } },
                 { "hcmp",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::HCMP>(instructions, mLabelList).parse(mTokenStream); } },
                 { "rcmp",           [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::RCMP>(instructions, mLabelList).parse(mTokenStream); } },
 
@@ -164,17 +143,13 @@ namespace JesusASM::parser {
                 { "ipush",          [this](auto& instructions) { return InstructionParser<tree::IntInsnNode, Opcodes::IPUSH, tree::OperandSize::INT>(instructions, mLabelList).parse(mTokenStream); } },
                 { "lpush",          [this](auto& instructions) { return InstructionParser<tree::IntInsnNode, Opcodes::LPUSH, tree::OperandSize::LONG>(instructions, mLabelList).parse(mTokenStream); } },
 
-                { "i2b",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::I2B>(instructions, mLabelList).parse(mTokenStream); } },
-                { "i2s",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::I2S>(instructions, mLabelList).parse(mTokenStream); } },
-                { "i2l",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::I2L>(instructions, mLabelList).parse(mTokenStream); } },
+                { "l2b",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::L2B>(instructions, mLabelList).parse(mTokenStream); } },
+                { "l2s",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::L2S>(instructions, mLabelList).parse(mTokenStream); } },
                 { "l2i",            [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::L2I>(instructions, mLabelList).parse(mTokenStream); } },
 
                 { "const_m1",       [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::CONST_M1>(instructions, mLabelList).parse(mTokenStream); } },
                 { "const_0",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::CONST_0>(instructions, mLabelList).parse(mTokenStream); } },
                 { "const_1",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::CONST_1>(instructions, mLabelList).parse(mTokenStream); } },
-
-                { "lconst_0",       [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LCONST_0>(instructions, mLabelList).parse(mTokenStream); } },
-                { "lconst_1",       [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LCONST_1>(instructions, mLabelList).parse(mTokenStream); } },
 
                 { "hconst_null",    [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::HCONST_NULL>(instructions, mLabelList).parse(mTokenStream); } },
 
@@ -183,7 +158,6 @@ namespace JesusASM::parser {
                 { "call",           [this](auto& instructions) { return InstructionParser<tree::CallInsnNode, Opcodes::CALL>(instructions, mLabelList).parse(mTokenStream); } },
 
                 { "return",         [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::RETURN>(instructions, mLabelList).parse(mTokenStream); } },
-                { "ireturn",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::IRETURN>(instructions, mLabelList).parse(mTokenStream); } },
                 { "lreturn",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::LRETURN>(instructions, mLabelList).parse(mTokenStream); } },
                 { "hreturn",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::HRETURN>(instructions, mLabelList).parse(mTokenStream); } },
                 { "rreturn",        [this](auto& instructions) { return InstructionParser<tree::InsnNode, Opcodes::RRETURN>(instructions, mLabelList).parse(mTokenStream); } },

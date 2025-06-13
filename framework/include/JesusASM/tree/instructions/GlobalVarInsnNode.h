@@ -13,9 +13,6 @@ namespace JesusASM::tree {
         GlobalVarInsnNode(Opcode opcode, std::string_view module, std::string_view name, std::string_view descriptor);
         GlobalVarInsnNode(Opcode opcode, std::string&& module, std::string&& name, std::string&& descriptor);
 
-        int getStackPushes() const override;
-        int getStackPops() const override;
-
         void print(std::ostream& stream) const override;
 
         void emit(moduleweb::InsnList& list) override;

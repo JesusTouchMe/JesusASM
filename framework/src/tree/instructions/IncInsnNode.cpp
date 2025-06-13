@@ -16,8 +16,6 @@ namespace JesusASM::tree {
 
     void IncInsnNode::emit(moduleweb::InsnList& list) {
         list.setLocalIndex(mIndex);
-        if (mOpcode.opcode == Opcode::LINC) list.setLocalIndex(mIndex + 1);
-
         list.incInsn(mOpcode.opcode, mIndex, mIncrement);
     }
 }
