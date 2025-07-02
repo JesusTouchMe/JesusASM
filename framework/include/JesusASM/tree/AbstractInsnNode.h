@@ -51,9 +51,24 @@ namespace JesusASM::tree {
                 case Opcodes::HRETURN:
                 case Opcodes::RRETURN:
                     return true;
-            }
 
-            return false;
+                default:
+                    return false;
+            }
+        }
+
+        [[nodiscard]] bool isUnconditionalJump() const {
+            switch (mOpcode.opcode) {
+                case Opcodes::JMP:
+                case Opcodes::RETURN:
+                case Opcodes::LRETURN:
+                case Opcodes::HRETURN:
+                case Opcodes::RRETURN:
+                    return true;
+
+                default:
+                    return false;
+            }
         }
 
         virtual void print(std::ostream& stream) const = 0;

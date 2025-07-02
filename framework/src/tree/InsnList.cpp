@@ -286,31 +286,33 @@ namespace JesusASM::tree {
 
                 list.setStackDepth(newDepth);
 
-                if (it->getType() == InsnType::JUMP) {
-                    auto jump = static_cast<JumpInsnNode*>(it);
+                if (it->isJump()) {
+                    if (auto jump = dynamic_cast<JumpInsnNode*>(it)) {
+                        if (jump->mOpcode.opcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
+                            LabelNode* dest = jump->mDestination;
+                            if (!stackDepthMap.contains(dest) || newDepth > stackDepthMap[dest]) {
+                                stackDepthMap[dest] = newDepth;
+                                worklist.push(dest);
+                            }
 
-                    if (jump->mOpcode.opcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
-                        LabelNode* dest = jump->mDestination;
-                        if (!stackDepthMap.contains(dest) || newDepth > stackDepthMap[dest]) {
-                            stackDepthMap[dest] = newDepth;
-                            worklist.push(dest);
-                        }
+                            break;
+                        } else {
+                            LabelNode* target = jump->mDestination;
+                            LabelNode* fallThrough = jump->getNext() == nullptr ? nullptr : jump->getNext()->mLabel;
 
-                        break;
-                    } else {
-                        LabelNode* target = jump->mDestination;
-                        LabelNode* fallThrough = jump->getNext() == nullptr ? nullptr : jump->getNext()->mLabel;
-
-                        if (!stackDepthMap.contains(target) || newDepth > stackDepthMap[target]) {
-                            stackDepthMap[target] = newDepth;
-                            worklist.push(target);
-                        }
-                        if (fallThrough != nullptr) {
-                            if (!stackDepthMap.contains(fallThrough) || newDepth > stackDepthMap[fallThrough]) {
-                                stackDepthMap[fallThrough] = newDepth;
-                                worklist.push(fallThrough);
+                            if (!stackDepthMap.contains(target) || newDepth > stackDepthMap[target]) {
+                                stackDepthMap[target] = newDepth;
+                                worklist.push(target);
+                            }
+                            if (fallThrough != nullptr) {
+                                if (!stackDepthMap.contains(fallThrough) || newDepth > stackDepthMap[fallThrough]) {
+                                    stackDepthMap[fallThrough] = newDepth;
+                                    worklist.push(fallThrough);
+                                }
                             }
                         }
+                    } else if (it->isUnconditionalJump()) { // basically return. i gotta make this nicer
+                        break;
                     }
                 }
 
