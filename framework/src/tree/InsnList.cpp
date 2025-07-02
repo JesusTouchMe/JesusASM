@@ -256,6 +256,75 @@ namespace JesusASM::tree {
             node = node->getNext();
         }
 
+        std::unordered_map<LabelNode*, i32> stackDepthMap;
+        std::queue<LabelNode*> worklist;
+
+        stackDepthMap[static_cast<LabelNode*>(mFirst.get())] = 0;
+        worklist.push(static_cast<LabelNode*>(mFirst.get()));
+
+        while (!worklist.empty()) {
+            auto label = worklist.front();
+            worklist.pop();
+
+            i32 currentDepth = stackDepthMap[label];
+            i32 newDepth = currentDepth;
+
+            for (auto pred : label->mPredecessors) {
+                if (stackDepthMap.contains(pred)) {
+                    newDepth = std::max(newDepth, stackDepthMap[pred]);
+                }
+            }
+
+            AbstractInsnNode* it = label;
+            while (it != nullptr && it->mLabel == label) { // same as doing for auto insn : label.getInstructions() if label contained its own list of instructions
+                newDepth -= it->getStackPops();
+                newDepth += it->getStackPushes();
+
+                if (newDepth < 0) {
+                    throw std::runtime_error("Stack underflow");
+                }
+
+                list.setStackDepth(newDepth);
+
+                if (it->getType() == InsnType::JUMP) {
+                    auto jump = static_cast<JumpInsnNode*>(it);
+
+                    if (jump->mOpcode.opcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
+                        LabelNode* dest = jump->mDestination;
+                        if (!stackDepthMap.contains(dest) || newDepth > stackDepthMap[dest]) {
+                            stackDepthMap[dest] = newDepth;
+                            worklist.push(dest);
+                        }
+
+                        break;
+                    } else {
+                        LabelNode* target = jump->mDestination;
+                        LabelNode* fallThrough = jump->getNext() == nullptr ? nullptr : jump->getNext()->mLabel;
+
+                        if (!stackDepthMap.contains(target) || newDepth > stackDepthMap[target]) {
+                            stackDepthMap[target] = newDepth;
+                            worklist.push(target);
+                        }
+                        if (fallThrough != nullptr) {
+                            if (!stackDepthMap.contains(fallThrough) || newDepth > stackDepthMap[fallThrough]) {
+                                stackDepthMap[fallThrough] = newDepth;
+                                worklist.push(fallThrough);
+                            }
+                        }
+                    }
+                }
+
+                it = it->getNext();
+            }
+
+            for (auto successor : label->mSuccessors) {
+                if (!stackDepthMap.contains(successor) || newDepth > stackDepthMap[successor]) {
+                    stackDepthMap[successor] = newDepth;
+                    worklist.push(successor);
+                }
+            }
+        }
+
         node = mFirst.get();
         while (node != nullptr) {
             node->emit(list);
