@@ -7,9 +7,11 @@
 #include "JesusASM/moduleweb-wrappers/InsnList.h"
 
 #include <iostream>
+#include <optional>
 #include <queue>
 #include <stdexcept>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace JesusASM::tree {
     bool InsnList::contains(AbstractInsnNode* insn) const {
@@ -220,6 +222,20 @@ namespace JesusASM::tree {
         mLast = nullptr;
     }
 
+    bool InsnList::hasTerminator() const {
+        if (empty()) return false;
+
+        LabelNode* label = mLast->mLabel;
+        AbstractInsnNode* node = mLast;
+        while (node != nullptr && node->mLabel == label) {
+            if (node->isJump()) return true;
+
+            node = node->getPrev();
+        }
+
+        return false;
+    }
+
     void InsnList::print(std::ostream& stream) const {
         AbstractInsnNode* node = mFirst.get();
         while (node != nullptr) {
@@ -241,8 +257,6 @@ namespace JesusASM::tree {
             addFront(std::make_unique<LabelNode>());
         }
 
-        analyzeFallthroughLabels();
-
         AbstractInsnNode* node = mFirst.get();
         while (node != nullptr) {
             if (node->getType() == InsnType::LABEL) {
@@ -256,24 +270,32 @@ namespace JesusASM::tree {
             node = node->getNext();
         }
 
+        analyzeFallthroughLabels();
+
         std::unordered_map<LabelNode*, i32> stackDepthMap;
+        std::unordered_set<LabelNode*> visited;
         std::queue<LabelNode*> worklist;
 
-        stackDepthMap[static_cast<LabelNode*>(mFirst.get())] = 0;
-        worklist.push(static_cast<LabelNode*>(mFirst.get()));
+        LabelNode* entry = static_cast<LabelNode*>(mFirst.get());
+        stackDepthMap[entry] = 0;
+        worklist.push(entry);
+        visited.insert(entry);
+
+        size_t stepCount = 0;
+        const size_t MAX_STEPS = 10000000;
 
         while (!worklist.empty()) {
+            if (++stepCount > MAX_STEPS) {
+                throw std::runtime_error("Stack analysis exceeded step limit. Possible infinite loop");
+            }
+
             auto label = worklist.front();
             worklist.pop();
 
             i32 currentDepth = stackDepthMap[label];
             i32 newDepth = currentDepth;
 
-            for (auto pred : label->mPredecessors) {
-                if (stackDepthMap.contains(pred)) {
-                    newDepth = std::max(newDepth, stackDepthMap[pred]);
-                }
-            }
+            bool changed = false;
 
             AbstractInsnNode* it = label;
             while (it != nullptr && it->mLabel == label) { // same as doing for auto insn : label.getInstructions() if label contained its own list of instructions
@@ -285,33 +307,40 @@ namespace JesusASM::tree {
                 }
 
                 list.setStackDepth(newDepth);
+                changed = true;
 
                 if (it->isJump()) {
                     if (auto jump = dynamic_cast<JumpInsnNode*>(it)) {
-                        if (jump->mOpcode.opcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
                             LabelNode* dest = jump->mDestination;
+                        if (jump->mOpcode.opcode == Opcodes::JMP) { // unconditional. literally just ignore the rest of the instructions
                             if (!stackDepthMap.contains(dest) || newDepth > stackDepthMap[dest]) {
                                 stackDepthMap[dest] = newDepth;
-                                worklist.push(dest);
+                                if (!visited.contains(dest)) {
+                                    worklist.push(dest);
+                                    visited.insert(dest);
+                                }
                             }
 
                             break;
                         } else {
-                            LabelNode* target = jump->mDestination;
-                            LabelNode* fallThrough = jump->getNext() == nullptr ? nullptr : jump->getNext()->mLabel;
-
-                            if (!stackDepthMap.contains(target) || newDepth > stackDepthMap[target]) {
-                                stackDepthMap[target] = newDepth;
-                                worklist.push(target);
+                            if (!stackDepthMap.contains(dest) || newDepth > stackDepthMap[dest]) {
+                                stackDepthMap[dest] = newDepth;
+                                if (!visited.contains(dest)) {
+                                    worklist.push(dest);
+                                    visited.insert(dest);
+                                }
                             }
-                            if (fallThrough != nullptr) {
-                                if (!stackDepthMap.contains(fallThrough) || newDepth > stackDepthMap[fallThrough]) {
-                                    stackDepthMap[fallThrough] = newDepth;
+
+                            LabelNode* fallThrough = it->getNext() ? it->getNext()->mLabel : nullptr;
+                            if (fallThrough && (!stackDepthMap.contains(fallThrough) || newDepth > stackDepthMap[fallThrough])) {
+                                stackDepthMap[fallThrough] = newDepth;
+                                if (!visited.contains(fallThrough)) {
                                     worklist.push(fallThrough);
+                                    visited.insert(fallThrough);
                                 }
                             }
                         }
-                    } else if (it->isUnconditionalJump()) { // basically return. i gotta make this nicer
+                    } else if (it->isUnconditionalJump()) { // basically checks return. i gotta make this nicer
                         break;
                     }
                 }
@@ -319,10 +348,15 @@ namespace JesusASM::tree {
                 it = it->getNext();
             }
 
-            for (auto successor : label->mSuccessors) {
-                if (!stackDepthMap.contains(successor) || newDepth > stackDepthMap[successor]) {
-                    stackDepthMap[successor] = newDepth;
-                    worklist.push(successor);
+            if (changed) {
+                for (auto successor: label->mSuccessors) {
+                    if (!stackDepthMap.contains(successor) || newDepth > stackDepthMap[successor]) {
+                        stackDepthMap[successor] = newDepth;
+                        if (!visited.contains(successor)) {
+                            worklist.push(successor);
+                            visited.insert(successor);
+                        }
+                    }
                 }
             }
         }
@@ -335,21 +369,42 @@ namespace JesusASM::tree {
     }
 
     void InsnList::analyzeFallthroughLabels() {
-        tree::LabelNode* prevLabel = nullptr;
-        tree::AbstractInsnNode* prevInsn = nullptr;
-
-        for (tree::AbstractInsnNode* it = mFirst.get(); it != nullptr; it = it->getNext()) {
+        for (AbstractInsnNode* it = mFirst.get(); it != nullptr; it = it->getNext()) {
             if (it->getType() == InsnType::LABEL) {
-                auto currentLabel = static_cast<tree::LabelNode*>(it);
+                auto label = static_cast<LabelNode*>(it);
+                label->mPredecessors.clear();
+                label->mSuccessors.clear();
+            }
+        }
 
-                if (prevLabel != nullptr && prevInsn != nullptr && !prevInsn->isJump()) {
-                    prevLabel->addSuccessor(currentLabel);
-                    currentLabel->addPredecessor(prevLabel);
+        for (AbstractInsnNode* it = mFirst.get(); it != nullptr; it = it->getNext()) {
+            AbstractInsnNode* next = it->getNext();
+
+            if (auto jump = dynamic_cast<JumpInsnNode*>(it)) {
+                LabelNode* target = jump->mDestination;
+
+                jump->mLabel->addSuccessor(target);
+                target->addPredecessor(jump->mLabel);
+
+                if (!jump->isUnconditionalJump()) {
+                    if (next && next->getType() == InsnType::LABEL) {
+                        auto fallthrough = static_cast<LabelNode*>(next);
+                        jump->mLabel->addSuccessor(fallthrough);
+                        fallthrough->addPredecessor(jump->mLabel);
+                    }
                 }
 
-                prevLabel = currentLabel;
-            } else {
-                prevInsn = it;
+            } else if (it->getType() == InsnType::LABEL) {
+                auto currentLabel = static_cast<LabelNode*>(it);
+                AbstractInsnNode* prev = it->getPrev();
+
+                if (prev && !prev->isJump()) {
+                    LabelNode* pred = prev->mLabel;
+                    if (pred && pred != currentLabel) {
+                        pred->addSuccessor(currentLabel);
+                        currentLabel->addPredecessor(pred);
+                    }
+                }
             }
         }
     }

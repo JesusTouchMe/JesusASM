@@ -11,6 +11,8 @@ namespace JesusASM::tree {
     public:
         JumpInsnNode(Opcode opcode, LabelNode* label);
 
+        LabelNode* getDestination() const;
+
         void print(std::ostream& stream) const override;
 
         void emit(moduleweb::InsnList& list) override;

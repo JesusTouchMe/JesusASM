@@ -11,6 +11,10 @@ namespace JesusASM::tree {
         : AbstractInsnNode(InsnType::JUMP, opcode)
         , mDestination(label) {}
 
+    LabelNode* JumpInsnNode::getDestination() const {
+        return mDestination;
+    }
+
     void JumpInsnNode::print(std::ostream& stream) const {
         stream << std::format("{} {}", mOpcode.name, mDestination->getName());
     }

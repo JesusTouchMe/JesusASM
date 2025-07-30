@@ -80,6 +80,7 @@ namespace JesusASM::tree {
         [[nodiscard]] AbstractInsnNode* getLast() const { return mLast; }
 
         [[nodiscard]] std::size_t getSize() const { return mSize; }
+        [[nodiscard]] bool empty() const { return mSize == 0; }
 
         [[nodiscard]] bool contains(AbstractInsnNode* insn) const;
 
@@ -101,6 +102,8 @@ namespace JesusASM::tree {
         std::unique_ptr<LabelNode> removeLabel(std::string_view name);
 
         void clear();
+
+        bool hasTerminator() const;
 
         void print(std::ostream& stream) const;
 
